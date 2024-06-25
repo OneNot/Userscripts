@@ -5,7 +5,7 @@
 // @author      1N07
 // @license     MIT
 // @icon        https://cdn.jsdelivr.net/gh/OneNot/Userscripts@5461d4fda44160715de147a70e2adc9b37c0dd50/Show%20Rottentomatoes%20meter%20-%20Trakt%20UI%20Addon/logo.png
-// @version     48.1.1
+// @version     48.1.2
 // @match       https://trakt.tv/movies/*
 // @match       https://trakt.tv/shows/*
 // @require     https://cdn.jsdelivr.net/gh/OneNot/Userscripts@5461d4fda44160715de147a70e2adc9b37c0dd50/Libraries/WaitForKeyElement/index.min.js
@@ -110,7 +110,7 @@ const RottentomatoesIcons = {
 
 const GetRottenTomatoesScoreElement = (data) => {
 	const li = document.createElement("li");
-	li.className = "rtm-ui-" + data.type;
+	li.className = `rtm-ui-${data.type}`;
 	li.innerHTML = `
     <a href="${data.link}" title="${data.title}">
       <div class="icon" style="width: 30px; height: 30px;">${data.icon}</div>
@@ -139,12 +139,15 @@ const GetRottenTomatoesScoreElement = (data) => {
 				.querySelector("[title^='Critics']")
 				.getAttribute("title");
 			const link = rottenEl.getElementsByTagName("a")[0].getAttribute("href");
+			const criticsIcon = criticsTitle.split("% ")[1].split(/\s/)[0];
 			const critics = criticsTitle?.length
 				? {
 						type: "Critics",
 						score: criticsTitle.split("Critics ")[1].split("%")[0],
 						icon: RottentomatoesIcons[
-							criticsTitle.split("% ")[1].split(/\s/)[0]
+							!criticsIcon || criticsIcon === "null"
+								? "empty_tomato"
+								: criticsIcon
 						],
 						title: criticsTitle,
 						link: link,
@@ -153,12 +156,15 @@ const GetRottenTomatoesScoreElement = (data) => {
 			const audienceTitle = rottenEl
 				.querySelector("[title^='Audience']")
 				.getAttribute("title");
+			const audienceIcon = audienceTitle.split("% ")[1].split(/\s/)[0];
 			const audience = audienceTitle?.length
 				? {
 						type: "Audience",
 						score: audienceTitle.split("Audience ")[1].split("%")[0],
 						icon: RottentomatoesIcons[
-							audienceTitle.split("% ")[1].split(/\s/)[0]
+							!audienceIcon || audienceIcon === "null"
+								? "empty_popcorn"
+								: audienceIcon
 						],
 						title: audienceTitle,
 						link: link,
