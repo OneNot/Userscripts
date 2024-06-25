@@ -8,9 +8,21 @@
 // @version     48.1.0
 // @match       https://trakt.tv/movies/*
 // @match       https://trakt.tv/shows/*
+// @require     https://raw.githubusercontent.com/OneNot/Userscripts/main/Libraries/WaitForKeyElement/index.js
 // @run-at      document-body
 // ==/UserScript==
 
 (async function () {
-  
+  WaitForKeyElement(`
+      .shows.show #summary-ratings-wrapper .ratings,
+      .movies.show #summary-ratings-wrapper .ratings
+  `).then(insertLocation => {
+    console.log(insertLocation);
+    console.log(insertLocation.className);
+    WaitForKeyElement("#mcdiv321rotten > .firstResult").then(rottenEl => {
+      console.log(rottenEl);
+      console.log(rottenEl.className);
+      console.log(rottenEl.querySelector("[title^='Critics']").getAttribute("title"));
+    });
+  });
 })()
