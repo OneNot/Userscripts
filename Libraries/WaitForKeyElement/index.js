@@ -9,24 +9,26 @@
 // ==/UserScript==
 
 async function WaitForKeyElement(selector, timeout) {
-    return new Promise((resolve, reject) => {
-      let el = document.querySelector(selector);
+	return new Promise((resolve, reject) => {
+		let el = document.querySelector(selector);
 
-      if(el) {
-        resolve(el);
-        return;
-      }
+		if (el) {
+			resolve(el);
+			return;
+		}
 
-      new MutationObserver((mutationRecords, observer) => {
-        el = document.querySelector(selector);
-        if(el) {
-          resolve(el);
-          observer.disconnect();
-        }
-      }).observe(document.documentElement, { childList: true, subtree: true});
+		new MutationObserver((mutationRecords, observer) => {
+			el = document.querySelector(selector);
+			if (el) {
+				resolve(el);
+				observer.disconnect();
+			}
+		}).observe(document.documentElement, { childList: true, subtree: true });
 
-      if(timeout) {
-        setTimeout(() => { reject(null) }, timeout);
-      }
-    });
-  }
+		if (timeout) {
+			setTimeout(() => {
+				reject(null);
+			}, timeout);
+		}
+	});
+}
