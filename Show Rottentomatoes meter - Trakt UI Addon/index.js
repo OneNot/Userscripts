@@ -5,7 +5,7 @@
 // @author      1N07
 // @license     MIT
 // @icon        https://cdn.jsdelivr.net/gh/OneNot/Userscripts@5461d4fda44160715de147a70e2adc9b37c0dd50/Show%20Rottentomatoes%20meter%20-%20Trakt%20UI%20Addon/logo.png
-// @version     48.1.2
+// @version     48.1.3
 // @match       https://trakt.tv/movies/*
 // @match       https://trakt.tv/shows/*
 // @require     https://cdn.jsdelivr.net/gh/OneNot/Userscripts@5461d4fda44160715de147a70e2adc9b37c0dd50/Libraries/WaitForKeyElement/index.min.js
@@ -108,9 +108,9 @@ const RottentomatoesIcons = {
   </svg>`,
 };
 
-const GetRottenTomatoesScoreElement = (data) => {
+const MakeRottenTomatoesScoreElement = (data, placeholder = false) => {
 	const li = document.createElement("li");
-	li.className = `rtm-ui-${data.type}`;
+	li.className = `rtm-ui-${data.type} ${placeholder ? "srtm-uia-placeholder" : ""}`;
 	li.innerHTML = `
     <a href="${data.link}" title="${data.title}">
       <div class="icon" style="width: 30px; height: 30px;">${data.icon}</div>
@@ -123,8 +123,80 @@ const GetRottenTomatoesScoreElement = (data) => {
 	return li;
 };
 
-//TODO: error handling
-//TODO: placeholders before load
+const SetRealData = (from) => {
+	const placeholders = document.getElementsByClassName("srtm-uia-placeholder");
+	while (placeholders.length > 0) placeholders[0].remove();
+
+	const link = from?.getElementsByTagName("a")?.[0]?.getAttribute("href");
+	const criticsTitle = from
+		?.querySelector("[title^='Critics']")
+		?.getAttribute("title");
+	const audienceTitle = from
+		?.querySelector("[title^='Audience']")
+		?.getAttribute("title");
+	const audienceIconString = audienceTitle?.split("% ")?.[1]?.split(/\s/)?.[0];
+	const criticsIconString = criticsTitle?.split("% ")?.[1]?.split(/\s/)?.[0];
+
+	return {
+		audience: {
+			type: "Audience",
+			score: audienceTitle?.split("Audience ")?.[1]?.split("%")?.[0] ?? "N/A",
+			icon: RottentomatoesIcons[
+				!audienceIconString || audienceIconString === "null"
+					? "empty_popcorn"
+					: audienceIconString
+			],
+			title:
+				!audienceTitle || audienceIconString === "null"
+					? "No audience score available"
+					: audienceTitle,
+			link: link ?? "#",
+		},
+		critics: {
+			type: "Critics",
+			score: criticsTitle?.split("Critics ")?.[1]?.split("%")?.[0] ?? "N/A",
+			icon: RottentomatoesIcons[
+				!criticsIconString || criticsIconString === "null"
+					? "empty_tomato"
+					: criticsIconString
+			],
+			title:
+				!criticsTitle || criticsIconString === "null"
+					? "No critics score available"
+					: criticsTitle,
+			link: link ?? "#",
+		},
+	};
+};
+
+const SetPlaceholderData = () => {
+	return {
+		audience: {
+			type: "Audience",
+			score: "...",
+			icon: RottentomatoesIcons.empty_popcorn,
+			title: "Loading...",
+			link: "#",
+		},
+		critics: {
+			type: "Critics",
+			score: "...",
+			icon: RottentomatoesIcons.empty_tomato,
+			title: "Loading...",
+			link: "#",
+		},
+	};
+};
+
+//TODO: timeouts for WaitForElements?
+
+//TODO: try to root out false positives
+//e.g.
+//John Wick 5 -> finds John Wick
+//Se7en (1995) -> finds Se7en days (2010) - because it's called just Seven in Rottentomatoes
+//More results... is available in some cases
+//Could load in all the results found and choose the first result with the matching year. That sounds like a fairly accurate solution.
+
 (async () => {
 	if (HideRottenTomatoesMeterPanel) {
 		ApplyHideRottenTomatoesMeterPanelCSS();
@@ -134,45 +206,17 @@ const GetRottenTomatoesScoreElement = (data) => {
       .shows.show #summary-ratings-wrapper .ratings,
       .movies.show #summary-ratings-wrapper .ratings
   `).then((insertLocation) => {
+		const placeHolderData = SetPlaceholderData();
+		insertLocation.appendChild(
+			MakeRottenTomatoesScoreElement(placeHolderData.critics, true),
+		);
+		insertLocation.appendChild(
+			MakeRottenTomatoesScoreElement(placeHolderData.audience, true),
+		);
 		WaitForKeyElement("#mcdiv321rotten > .firstResult").then((rottenEl) => {
-			const criticsTitle = rottenEl
-				.querySelector("[title^='Critics']")
-				.getAttribute("title");
-			const link = rottenEl.getElementsByTagName("a")[0].getAttribute("href");
-			const criticsIcon = criticsTitle.split("% ")[1].split(/\s/)[0];
-			const critics = criticsTitle?.length
-				? {
-						type: "Critics",
-						score: criticsTitle.split("Critics ")[1].split("%")[0],
-						icon: RottentomatoesIcons[
-							!criticsIcon || criticsIcon === "null"
-								? "empty_tomato"
-								: criticsIcon
-						],
-						title: criticsTitle,
-						link: link,
-					}
-				: null;
-			const audienceTitle = rottenEl
-				.querySelector("[title^='Audience']")
-				.getAttribute("title");
-			const audienceIcon = audienceTitle.split("% ")[1].split(/\s/)[0];
-			const audience = audienceTitle?.length
-				? {
-						type: "Audience",
-						score: audienceTitle.split("Audience ")[1].split("%")[0],
-						icon: RottentomatoesIcons[
-							!audienceIcon || audienceIcon === "null"
-								? "empty_popcorn"
-								: audienceIcon
-						],
-						title: audienceTitle,
-						link: link,
-					}
-				: null;
-
-			insertLocation.appendChild(GetRottenTomatoesScoreElement(critics));
-			insertLocation.appendChild(GetRottenTomatoesScoreElement(audience));
+			const data = SetRealData(rottenEl);
+			insertLocation.appendChild(MakeRottenTomatoesScoreElement(data.critics));
+			insertLocation.appendChild(MakeRottenTomatoesScoreElement(data.audience));
 		});
 	});
 })();
