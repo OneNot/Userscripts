@@ -11,4 +11,4 @@ This script hides the infopanel normally rendered by "Show Rottentomatoes meter"
 
 ____
 
-[GitHub direct install](https://raw.githubusercontent.com/OneNot/Userscripts/main/Show%20Rottentomatoes%20meter%20-%20Trakt%20UI%20Addon/index.js) | [Greasyfork page](https://greasyfork.org/en/scripts/498861-show-rottentomatoes-meter-trakt-ui-addon)
+[GitHub direct install](https://github.com/OneNot/Userscripts/raw/main/Show%20Rottentomatoes%20meter%20-%20Trakt%20UI%20Addon/index.user.js) | [Greasyfork page](https://greasyfork.org/en/scripts/498861-show-rottentomatoes-meter-trakt-ui-addon)
