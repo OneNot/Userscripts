@@ -8,3 +8,7 @@ This script reads the data provided by that script and displays it neatly in the
 
 This script hides the infopanel normally rendered by "Show Rottentomatoes meter" on Trakt by default. If you wish to not hide it, set `HideRottenTomatoesMeterPanel` to _false_ at the top of the script.
 <sup>I'll probably add it as a proper menu option later when I can be bothered to do so...</sup>
+
+____
+
+[GitHub direct install](https://raw.githubusercontent.com/OneNot/Userscripts/main/Show%20Rottentomatoes%20meter%20-%20Trakt%20UI%20Addon/index.js) | [Greasyfork page](https://greasyfork.org/en/scripts/498861-show-rottentomatoes-meter-trakt-ui-addon)
