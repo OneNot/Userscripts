@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         IsThereAnyDeal game-specific links on EpicGames Store
 // @namespace    1N07
-// @version      0.9.0
+// @version      0.9.1
 // @description  Puts a game-specific IsThereAnyDeal link to the game pages on Epic Games Store
 // @author       1N07
-// @license      unlicense
+// @license      MIT
 // @icon         https://epicgames.com/favicon.ico
-// @compatible   firefox Tested on Firefox v122.0 and Tampermonkey 5.0.1
+// @compatible   firefox Tested on Firefox v128.0.3 and Tampermonkey 5.1.1
 // @compatible   firefox Likely to work on other userscript managers, but not tested
 // @compatible   chrome Latest version untested, but likely works with at least Tampermonkey
 // @compatible   opera Latest version untested, but likely works with at least Tampermonkey
