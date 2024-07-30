@@ -20,3 +20,7 @@ This is 100% reliable and will skip the less reliable (though mostly accurate an
 
 
 _Currently, the ITAD button is only added to the top of the page below the "View Offers" button. So no separate buttons for different editions or addons/DLC/what have you, unless you open the separate page for that edition/DLC._
+
+____
+
+[GitHub direct install](https://github.com/OneNot/Userscripts/raw/main/IsThereAnyDeal%20game-specific%20links%20on%20EpicGames%20Store/index.user.js) | [Greasyfork page](https://greasyfork.org/en/scripts/414411-isthereanydeal-game-specific-links-on-epicgames-store)
