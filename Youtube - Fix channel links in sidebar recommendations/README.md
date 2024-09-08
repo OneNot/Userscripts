@@ -7,6 +7,7 @@
 This script fixes that.</i>
 
 <b>The channel will open to the /videos section by default.</b> This can now be changed. Just find the option in the Tampermonkey menu and click it.
+
 <img src="https://i.imgur.com/bgYJEoG.png">
 
 ____
