@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Youtube - Fix channel links in sidebar recommendations
 // @namespace    1N07
-// @version      0.8.0
+// @version      0.8.1
 // @description  Fixes the channel links for the "Up next" and recommended videos below it on youtube.
 // @author       1N07
 // @license      MIT
@@ -57,10 +57,9 @@
 				"color: green",
 			);
 
-			//On video added
-			// biome-ignore lint/complexity/noForEach: <explanation>
-			containerSummary[0].added.forEach((vid) => {
-				//add blocker element
+			// On video added
+			for (const vid of containerSummary[0].added) {
+				// Add blocker element
 				const blockerParent = vid.querySelector(
 					".metadata.ytd-compact-video-renderer",
 				);
@@ -78,16 +77,16 @@
 				UpdateBlockerPositioning(channelLink);
 				UpdateUrl(vid, channelLink);
 
-				//add observer id to element so we can clean up the right observer when the element is later removed
+				// Add observer id to element so we can clean up the right observer when the element is later removed
 				vid.setAttribute("data-active-observer-id", perVideoObserverIndexTally);
 
-				//Add per-video observer for when the video href changes, so we can update the channel link accordingly. Doing this because apparently these days YT just swaps the data in the elements without swapping the elements themselves.
-				//Also put the observer in an array with an access key for later access
+				// Add per-video observer for when the video href changes, so we can update the channel link accordingly. Doing this because apparently these days YT just swaps the data in the elements without swapping the elements themselves.
+				// Also put the observer in an array with an access key for later access
 				perVideoObservers.push({
 					key: perVideoObserverIndexTally,
 					observer: new MutationSummary({
 						callback: (vidSummary) => {
-							//console.log("%cPer Video Observer triggered: href changed", "color: green");
+							// console.log("%cPer Video Observer triggered: href changed", "color: green");
 
 							UpdateBlockerPositioning(channelLink);
 							UpdateUrl(vid, channelLink);
@@ -97,27 +96,26 @@
 					}),
 				});
 				perVideoObserverIndexTally++;
-			});
+			}
 
-			//on removed
-			// biome-ignore lint/complexity/noForEach: <explanation>
-			containerSummary[0].removed.forEach((vid) => {
-				//get the observer id/key we stored in the element previously
+			// On removed
+			for (const vid of containerSummary[0].removed) {
+				// Get the observer id/key we stored in the element previously
 				const id = vid.dataset.activeObserverId;
-				//console.log("%cAttempting to remove observer: " + id, "color: red");
+				// console.log("%cAttempting to remove observer: " + id, "color: red");
 				if (id !== undefined) {
-					//console.log("id valid");
-					//get the observer from the observer array with the key
+					// console.log("id valid");
+					// Get the observer from the observer array with the key
 					const index = perVideoObservers.findIndex((o) => o.key === id);
 					if (index > -1) {
-						//console.log("observer found");
-						//disconnect the observer and remove it from the array
+						// console.log("observer found");
+						// Disconnect the observer and remove it from the array
 						perVideoObservers[index].observer.disconnect();
 						perVideoObservers.splice(index, 1);
-						//console.log("%cRemoved observer: " + id, "color: red");
+						// console.log("%cRemoved observer: " + id, "color: red");
 					}
 				}
-			});
+			}
 
 			//console.log("%cObservers alive: ", "color: yellow");
 			//console.log(perVideoObservers.map(x => x.key));
