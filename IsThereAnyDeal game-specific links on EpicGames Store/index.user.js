@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IsThereAnyDeal game-specific links on EpicGames Store
 // @namespace    1N07
-// @version      0.9.1
+// @version      0.9.2
 // @description  Puts a game-specific IsThereAnyDeal link to the game pages on Epic Games Store
 // @author       1N07
 // @license      MIT
@@ -33,11 +33,6 @@
 		if (window.location.href !== lastUrl) OnUrlChange();
 	}, 200);
 
-	let windowLoaded = false;
-	window.onload = () => {
-		windowLoaded = true;
-	};
-
 	function OnUrlChange() {
 		lastUrl = window.location.href;
 
@@ -48,7 +43,7 @@
 			)
 		) {
 			let place;
-			let insertInterval = setInterval(() => {
+			const insertInterval = setInterval(() => {
 				place = document.getElementsByClassName("css-bco1gb")[0];
 				if (place) {
 					clearInterval(insertInterval);
@@ -65,7 +60,7 @@
 	}
 
 	function InsertAndMakeSureButtonStays() {
-		let ButtonStayInterval = setInterval(() => {
+		const ButtonStayInterval = setInterval(() => {
 			if (!document.getElementById("ITADButt")) {
 				const place = document.getElementsByClassName("css-bco1gb")[0];
 				if (place) {
@@ -76,8 +71,6 @@
 					document.getElementById("ITADButt").onclick = GoToITAD;
 				}
 			}
-
-			if (windowLoaded) clearInterval(ButtonStayInterval);
 		}, 200);
 	}
 
