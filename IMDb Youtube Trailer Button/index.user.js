@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IMDb Youtube Trailer Button
 // @namespace    1N07
-// @version      0.3.2
+// @version      0.3.3
 // @description  Youtube trailers on imdb
 // @author       1N07
 // @icon         https://cdn.jsdelivr.net/gh/OneNot/Userscripts@a3d6c9f0bc76a605a47ba9ccee3d0ead7a7fa3cd/IMDb%20Youtube%20Trailer%20Button/logo.png
@@ -53,15 +53,18 @@
 	const name = nameElem.text().trim().replace(/\s/g, "+");
 	//$("[data-testid='title-container']:first a[title]:first").prop("title").trim().replace(/\s/g, "+"); //for video page if I want to support that later
 
-	const year = nameElem
-		.next()
+	let yearContainer = nameElem.next("ul");
+	if (!yearContainer.length) {
+		yearContainer = nameElem.nextUntil("ul").last().next();
+	}
+	const year = yearContainer
 		.find("a[href*='releaseinfo']:first")
 		.text()
 		.trim()
 		.replace(/\D/g, "");
 
 	if (name && name.length > 0) {
-		const theLink = `https://www.youtube.com/results?search_query=${name}+(${year})+trailer`;
+		const theLink = `https://www.youtube.com/results?search_query=${name}${year?.length ? `+(${year})` : ""}+trailer`;
 		const theLinkButton = `<div id="ytButton"><a href="${theLink}" target="_blank">${ytsvg}</a></div>`;
 
 		const pos = $(".video-preference:first");
