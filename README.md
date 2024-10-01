@@ -8,3 +8,4 @@
 - [IsThereAnyDeal game-specific links on EpicGames Store](https://github.com/OneNot/Userscripts/tree/main/IsThereAnyDeal%20game-specific%20links%20on%20EpicGames%20Store)
 - [Youtube - Fix channel links in sidebar recommendations](https://github.com/OneNot/Userscripts/tree/main/Youtube%20-%20Fix%20channel%20links%20in%20sidebar%20recommendations)
 - [IMDb Youtube Trailer Button](https://github.com/OneNot/Userscripts/tree/main/IMDb%20Youtube%20Trailer%20Button)
+- [Reddit - Big Card View](https://github.com/OneNot/Userscripts/tree/main/Reddit%20-%20Big%20Card%20View)
