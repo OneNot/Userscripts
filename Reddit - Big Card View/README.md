@@ -12,9 +12,9 @@
 - Multi-image posts' images are not centered. This looks right when there are more images than can be visible at once, but when width is left over, it looks weird that the images are aligned left.
 - It would be better if only the images that can initially fit inside the multi-image posts' containers would be loaded, with additional images getting loaded after clicking through the images.
 
-This is a more feature rich version of the style of the same name, which you can find here if you'd prefer.
+This is a more feature rich version of a style of the same name, which you can find [here](https://greasyfork.org/en/scripts/425825-reddit-big-card-view) if you'd prefer.
 This is still a work in progress.
 
 ____
 
-[GitHub direct install](https://github.com/OneNot/Userscripts/raw/refs/heads/main/Reddit%20-%20Big%20Card%20View/index.user.js) | -
+[GitHub direct install](https://github.com/OneNot/Userscripts/raw/refs/heads/main/Reddit%20-%20Big%20Card%20View/index.user.js) | - [Greasyfork Page](https://greasyfork.org/en/scripts/511058-reddit-big-card-view)
