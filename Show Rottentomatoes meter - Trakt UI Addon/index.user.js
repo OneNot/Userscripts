@@ -4,11 +4,11 @@
 // @namespace   1N07
 // @author      1N07
 // @license     MIT
-// @icon        https://cdn.jsdelivr.net/gh/OneNot/Userscripts@5461d4fda44160715de147a70e2adc9b37c0dd50/Show%20Rottentomatoes%20meter%20-%20Trakt%20UI%20Addon/logo.png
-// @version     48.1.3
+// @icon        https://raw.githubusercontent.com/OneNot/Userscripts/main/Show%20Rottentomatoes%20meter%20-%20Trakt%20UI%20Addon/logo.png
+// @version     48.1.4
 // @match       https://trakt.tv/movies/*
 // @match       https://trakt.tv/shows/*
-// @require     https://cdn.jsdelivr.net/gh/OneNot/Userscripts@5461d4fda44160715de147a70e2adc9b37c0dd50/Libraries/WaitForKeyElement/index.min.js
+// @require     https://update.greasyfork.org/scripts/511024/1457631/Simple%20WaitForKeyElement.js
 // ==/UserScript==
 
 const HideRottenTomatoesMeterPanel = true;
@@ -197,7 +197,7 @@ const SetPlaceholderData = () => {
 //More results... is available in some cases
 //Could load in all the results found and choose the first result with the matching year. That sounds like a fairly accurate solution.
 
-(async () => {
+(() => {
 	if (HideRottenTomatoesMeterPanel) {
 		ApplyHideRottenTomatoesMeterPanelCSS();
 	}
