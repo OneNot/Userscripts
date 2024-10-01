@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name        1N07's Helper Functions
+// @name        Simple template literal deindent
 // @license     MIT
 // @namespace   1N07
 // @match       *://*/*
 // @version     1.0
 // @author      1N07
-// @description Library that Exports helpful functions, mainly for my (1N07) personal use.
+// @description Can be used as a tag function for template literals to strip code indentation from it while preserving intended indentation, by stripping out the smallest indent every line has in common.
 // ==/UserScript==
 
 /**
