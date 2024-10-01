@@ -9,8 +9,9 @@
 // ==/UserScript==
 
 /**
- * Can be used as a tag function for template literals to strip code indentation from it while preserving intended indentation,
+ * Can be used as a tag function for template literals to strip code indentation from it while preserving intended relational indentation,
  * by stripping out the smallest indent every line has in common.
+ * Also trims the final string, so that template literals can be written more cleanly in code.
  * @param {String} str
  * @returns str with code indentation removed
  */
@@ -24,5 +25,6 @@ function Deindent(str) {
 	return str
 		.split("\n")
 		.map((line) => line.slice(smallestIndent))
-		.join("\n");
+		.join("\n")
+		.trim();
 }
