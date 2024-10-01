@@ -17,4 +17,4 @@ This is still a work in progress.
 
 ____
 
-[GitHub direct install](https://github.com/OneNot/Userscripts/raw/refs/heads/main/Reddit%20-%20Big%20Card%20View/index.user.js) | - [Greasyfork Page](https://greasyfork.org/en/scripts/511058-reddit-big-card-view)
+[GitHub direct install](https://github.com/OneNot/Userscripts/raw/refs/heads/main/Reddit%20-%20Big%20Card%20View/index.user.js) | [Greasyfork Page](https://greasyfork.org/en/scripts/511058-reddit-big-card-view)
