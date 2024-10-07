@@ -6,7 +6,7 @@
 // @author       1N07
 // @icon         https://cdn.jsdelivr.net/gh/OneNot/Userscripts@a3d6c9f0bc76a605a47ba9ccee3d0ead7a7fa3cd/IMDb%20Youtube%20Trailer%20Button/logo.png
 // @icon64       https://cdn.jsdelivr.net/gh/OneNot/Userscripts@a3d6c9f0bc76a605a47ba9ccee3d0ead7a7fa3cd/IMDb%20Youtube%20Trailer%20Button/logo.png
-// @license      MIT
+// @license      Unlicense
 // @compatible   firefox Tested on Firefox v130.0.1 with Tampermonkey 5.1.1. Likely to work on other userscript managers as well, but not tested.
 // @compatible   chrome Latest version untested, but likely works with at least Tampermonkey
 // @compatible   opera Latest version untested, but likely works with at least Tampermonkey

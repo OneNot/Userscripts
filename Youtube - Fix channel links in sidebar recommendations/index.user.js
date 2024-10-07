@@ -4,7 +4,7 @@
 // @version      0.8.1
 // @description  Fixes the channel links for the "Up next" and recommended videos below it on youtube.
 // @author       1N07
-// @license      MIT
+// @license      Unlicense
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
 // @match        https://www.youtube.com/*
 // @require      https://update.greasyfork.org/scripts/12036/70722/Mutation%20Summary.js

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        DeindentTemplateLiteralString
-// @license     MIT
+// @license     Unlicense
 // @namespace   1N07
 // @match       *://*/*
 // @version     1.2

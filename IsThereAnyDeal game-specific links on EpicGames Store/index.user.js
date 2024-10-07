@@ -4,7 +4,7 @@
 // @version      0.9.2
 // @description  Puts a game-specific IsThereAnyDeal link to the game pages on Epic Games Store
 // @author       1N07
-// @license      MIT
+// @license      Unlicense
 // @icon         https://epicgames.com/favicon.ico
 // @compatible   firefox Tested on Firefox v128.0.3 and Tampermonkey 5.1.1
 // @compatible   firefox Likely to work on other userscript managers, but not tested

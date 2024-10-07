@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Simple WaitForKeyElement
-// @license     MIT
+// @license     Unlicense
 // @namespace   1N07
 // @match       *://*/*
 // @version     1.0.1

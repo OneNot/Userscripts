@@ -3,7 +3,7 @@
 // @description This is an addon script for "Show Rottentomatoes meter" by cuzi, that displays the Rottentomatoes info cleanly on the trakt.tv infobar
 // @namespace   1N07
 // @author      1N07
-// @license     MIT
+// @license     Unlicense
 // @icon        https://raw.githubusercontent.com/OneNot/Userscripts/main/Show%20Rottentomatoes%20meter%20-%20Trakt%20UI%20Addon/logo.png
 // @version     48.1.4
 // @match       https://trakt.tv/movies/*

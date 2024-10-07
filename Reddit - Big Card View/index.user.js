@@ -4,7 +4,7 @@
 // @version      0.3
 // @description  Makes the card view on Reddit bigger and improves ways content is displayed to go along with that.
 // @author       1N07
-// @license      MIT
+// @license      Unlicense
 // @match        https://www.reddit.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=reddit.com
 // @require      https://update.greasyfork.org/scripts/511046/1457685/DeindentTemplateLiteralString.js
