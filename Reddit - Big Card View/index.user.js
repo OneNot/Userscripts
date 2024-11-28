@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit - Big Card View
 // @namespace    1N07
-// @version      0.3
+// @version      0.3.1
 // @description  Makes the card view on Reddit bigger and improves ways content is displayed to go along with that.
 // @author       1N07
 // @license      Unlicense
@@ -36,7 +36,7 @@
 			justify-content: center;
 		}
 		#main-content {
-			max-width: calc(100% - 1rem - 316px);
+			max-width: 100%;
 			width: ${MainContainerWidth};
 		}
 		#right-sidebar-container:has(> aside) {
