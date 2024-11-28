@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Youtube - Fix channel links in sidebar recommendations
 // @namespace    1N07
-// @version      0.8.1
+// @version      0.8.2
 // @description  Fixes the channel links for the "Up next" and recommended videos below it on youtube.
 // @author       1N07
 // @license      Unlicense
@@ -47,9 +47,44 @@
 		}
 	`);
 
+	//"Block Youtube Users" compatibility
+	let byuBlockerStyleAdjustment;
+	let byuObserver = new MutationSummary({
+		callback: (summary) => {
+			console.log(
+				"%cBlock Youtube Users detected, applying compatibility feature",
+				"color: green;",
+			);
+			summary[0].added[0].addEventListener("click", () => {
+				setTimeout(() => {
+					if (document.getElementsByClassName("byu-add")?.length > 0) {
+						byuBlockerStyleAdjustment = GM_addStyle(
+							".channel-link-blocker { left: 20px !important; }",
+						);
+						//console.log("%cAdded blocker adjustment", "color: green;");
+					} else {
+						byuBlockerStyleAdjustment.remove();
+						//console.log("%cRemoved blocker adjustment", "color: green;");
+					}
+				}, 200);
+			});
+			if (byuObserver) {
+				byuObserver.disconnect();
+				byuObserver = null;
+			}
+		},
+		queries: [{ element: "#byu-icon" }],
+	});
+	setTimeout(() => {
+		if (byuObserver) {
+			//console.log("%cBlock Youtube Users not detected", "color: green;");
+			byuObserver.disconnect();
+			byuObserver = null;
+		}
+	}, 10000);
+
 	const perVideoObservers = [];
 	let perVideoObserverIndexTally = 0;
-
 	const containerObserver = new MutationSummary({
 		callback: (containerSummary) => {
 			console.log(
@@ -134,7 +169,7 @@
 			"style",
 			`top: ${blocker.parentElement.querySelector("a[href^='/watch'] > h3")?.clientHeight || 0}px;`,
 		);
-		//above adjustment appears to rarely and randomly fail. Attempted fix by delaying adjustment as perhaps the height hasn't been computed yet?
+		//above adjustment appears to rarely and randomly fail. Attempted fix by additionally delaying adjustment as perhaps the height hasn't been computed yet?
 		setTimeout(() => {
 			blocker.setAttribute(
 				"style",
