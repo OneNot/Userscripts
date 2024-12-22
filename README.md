@@ -9,3 +9,4 @@
 - [Youtube - Fix channel links in sidebar recommendations](https://github.com/OneNot/Userscripts/tree/main/Youtube%20-%20Fix%20channel%20links%20in%20sidebar%20recommendations)
 - [IMDb Youtube Trailer Button](https://github.com/OneNot/Userscripts/tree/main/IMDb%20Youtube%20Trailer%20Button)
 - [Reddit - Big Card View](https://github.com/OneNot/Userscripts/tree/main/Reddit%20-%20Big%20Card%20View)
+- [Export Youtube Playlist in plaintext](https://github.com/OneNot/Userscripts/tree/main/Export%20Youtube%20Playlist%20in%20plaintext)
