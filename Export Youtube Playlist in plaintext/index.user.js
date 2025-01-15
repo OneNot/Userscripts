@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Export Youtube Playlist in plaintext
 // @namespace    1N07
-// @version      0.8
+// @version      0.9
 // @description  Shows a list of the playlist video names/channels/URLs in plaintext to be easily copied
 // @author       1N07
 // @license      unlicense
-// @compatible   firefox Tested on Firefox v134.0.1 and Tampermonkey 5.3.3
+// @compatible   firefox v0.9 Tested on Firefox v134.0.1 and Tampermonkey 5.3.3
 // @compatible   firefox Likely to work on other userscript managers, but not tested
-// @compatible   chrome Tested on Chrome v132.0.6834.84 and Tampermonkey 5.3.3
+// @compatible   chrome v0.9 Tested on Chrome v132.0.6834.84 and Tampermonkey 5.3.3
 // @compatible   chrome Likely to work on other userscript managers, but not tested
 // @compatible   opera untested, but likely works with at least Tampermonkey
 // @compatible   edge untested, but likely works with at least Tampermonkey
@@ -48,7 +48,7 @@
 		}
 		#exportPlainTextList > span {
 			font-family: "Roboto","Arial",sans-serif;
-			color: var(--yt-spec-text-primary);
+			color: #d9d9d9;
 			white-space: nowrap;
 			font-size: 1.4rem;
 			line-height: 2rem;
@@ -128,9 +128,21 @@
 			max-height: unset !important;
 		}
 
-		.list-build-message {
-			color: red;
-			font-size: 1.33em;
+		.yt-pl-export-loading-popup {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background-color: #262626;
+			padding: 20px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			z-index: 9999;
+			border-radius: 8px;
+			text-align: center;
+		}
+		.yt-pl-export-loading-popup-message {
+			font-size: 2rem;
+			color: #d9d9d9;
 		}
 	`);
 
@@ -178,21 +190,13 @@
 			return;
 
 		document.querySelector("ytd-browse[page-subtype='playlist']").click();
-
+		const popup = createPopup("Scrolling to load all videos in the playlist. Please wait...");
 		listCreationAllowed = false;
-		const message = document.createElement('p');
-		message.id = 'listBuildMessage';
-		message.classList.add('list-build-message');
-		message.textContent = 'Getting list... please click out of the popup to continue autoscrolling...';
-		const lineBreak = document.createElement('br');
-		message.appendChild(lineBreak);
-		document.getElementById('exportPlainTextList').after(message);
-
 		const scrollInterval = setInterval(() => {
 			if (document.querySelector("ytd-continuation-item-renderer.ytd-playlist-video-list-renderer")) {
 				window.scrollTo(0, (document.documentElement || document.body).scrollHeight);
 			} else {
-				document.getElementById("listBuildMessage").remove();
+				popup.close();
 				DisplayListOptions();
 				clearInterval(scrollInterval);
 			}
@@ -336,5 +340,30 @@
 		}
 
 		document.querySelector("#listDisplayContainer > textarea").value = list;
+	}
+
+	function createPopup(message) {
+		// Create the popup container
+		const popup = document.createElement('div');
+		popup.classList.add('yt-pl-export-loading-popup'); // Apply the popup class
+
+		// Create the message element
+		const messageElem = document.createElement('p');
+		messageElem.classList.add("yt-pl-export-loading-popup-message"); // Apply the message class
+		messageElem.textContent = message;
+		popup.appendChild(messageElem);
+
+		// Append the popup to the body
+		document.body.appendChild(popup);
+
+		// Return an object that can be used to close the popup later
+		return {
+			close: closePopup
+		};
+
+		// Function to close the popup
+		function closePopup() {
+			document.body.removeChild(popup);
+		}
 	}
 })();
