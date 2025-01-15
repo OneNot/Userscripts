@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         Export Youtube Playlist in plaintext
 // @namespace    1N07
-// @version      0.9
+// @version      0.9.1
 // @description  Shows a list of the playlist video names/channels/URLs in plaintext to be easily copied
 // @author       1N07
 // @license      unlicense
-// @compatible   firefox v0.9 Tested on Firefox v134.0.1 and Tampermonkey 5.3.3
 // @compatible   firefox Likely to work on other userscript managers, but not tested
-// @compatible   chrome v0.9 Tested on Chrome v132.0.6834.84 and Tampermonkey 5.3.3
+// @compatible   firefox v0.9 Tested on Firefox v134.0.1 and Tampermonkey 5.3.3
 // @compatible   chrome Likely to work on other userscript managers, but not tested
+// @compatible   chrome v0.9 Tested on Chrome v132.0.6834.84 and Tampermonkey 5.3.3
 // @compatible   opera untested, but likely works with at least Tampermonkey
 // @compatible   edge untested, but likely works with at least Tampermonkey
 // @compatible   safari untested, but likely works with at least Tampermonkey
