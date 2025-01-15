@@ -1,16 +1,16 @@
 // ==UserScript==
 // @name         Export Youtube Playlist in plaintext
 // @namespace    1N07
-// @version      0.7.6
+// @version      0.7.7
 // @description  Shows a list of the playlist video names/channels/URLs in plaintext to be easily copied
 // @author       1N07
 // @license      unlicense
-// @compatible   firefox Tested on Firefox v133.0.3 and Tampermonkey 5.3.3
+// @compatible   firefox Tested on Firefox v134.0.1 and Tampermonkey 5.3.3
 // @compatible   firefox Likely to work on other userscript managers, but not tested
-// @compatible   chrome Latest version untested, but likely works with at least Tampermonkey
-// @compatible   opera Latest version untested, but likely works with at least Tampermonkey
-// @compatible   edge Latest version untested, but likely works with at least Tampermonkey
-// @compatible   safari Latest version untested, but likely works with at least Tampermonkey
+// @compatible   chrome Doesn't appear to work. Will fix.
+// @compatible   opera untested, but likely works with at least Tampermonkey
+// @compatible   edge untested, but likely works with at least Tampermonkey
+// @compatible   safari untested, but likely works with at least Tampermonkey
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js
 // @match        https://www.youtube.com/*
@@ -121,7 +121,9 @@
 		buttonInsertInterval = setInterval(() => {
 			//wait for possible previous buttons to stop existing (due to how youtube loads pages) and for the space for the new button to be available
 			if ($("#exportPlainTextList").length === 0) {
-				const place = $("tp-yt-iron-dropdown.ytd-popup-container .yt-list-view-model-wiz[role='menu']");
+				let place = $("tp-yt-iron-dropdown.ytd-popup-container .yt-list-view-model-wiz[role='menu']");
+				if (!place || place.length === 0)
+					place = $("tp-yt-iron-dropdown.ytd-popup-container tp-yt-paper-listbox.ytd-menu-popup-renderer[role='listbox']");
 				if (place?.length > 0) {
 					place.append(`
 						<div id="exportPlainTextList">
