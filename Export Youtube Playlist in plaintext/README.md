@@ -4,6 +4,7 @@
 <img src="https://i.imgur.com/T5G1nnM.png">
 
 <b>Export button can now also be found in the userscript manager menu (when on playlist page):</b>
+
 <img src="https://i.imgur.com/RjfRiN0.png">
 
 ____
