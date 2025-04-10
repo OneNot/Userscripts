@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         Export Youtube Playlist in plaintext
 // @namespace    1N07
-// @version      0.9.2
+// @version      0.9.5
 // @description  Shows a list of the playlist video names/channels/URLs in plaintext to be easily copied
 // @author       1N07
 // @license      unlicense
-// @compatible   firefox v0.9.2 Tested on Firefox v134.0.1 and Tampermonkey 5.3.3 (Likely to work on other userscript managers, but not tested)
+// @compatible   firefox v0.9.3 Tested on Firefox v137.0.1 and Tampermonkey 5.3.3 (Likely to work on other userscript managers, but not tested)
 // @compatible   chrome v0.9.2 Tested on Chrome v132.0.6834.84 and Tampermonkey 5.3.3 (Likely to work on other userscript managers, but not tested)
 // @compatible   opera untested, but likely works with at least Tampermonkey
 // @compatible   edge untested, but likely works with at least Tampermonkey
@@ -15,6 +15,8 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_addStyle
+// @grant        GM_registerMenuCommand
+// @grant        GM_unregisterMenuCommand
 // ==/UserScript==
 
 (() => {
@@ -26,6 +28,7 @@
 	let listCreationAllowed = true;
 	let urlAtLastCheck = "";
 	let buttonInsertInterval;
+	let gmMenuButton;
 
 	//add some CSS
 	GM_addStyle(`
@@ -147,10 +150,24 @@
 	setInterval(() => {
 		if (urlAtLastCheck !== window.location.href) {
 			urlAtLastCheck = window.location.href;
-			if (urlAtLastCheck.includes("/playlist?list="))
+			if (urlAtLastCheck.includes("/playlist?list=")) {
+				gmMenuButton = GM_registerMenuCommand("Export Playlist", () => {
+					if (document.querySelector("ytd-playlist-video-list-renderer > #contents.ytd-playlist-video-list-renderer")?.hasChildNodes()) {
+						ScrollUntillAllVisible();
+					}
+					else {
+						const popup = CreatePopup("No videos found in this playlist. Either this playlist has no videos, or they have not loaded in yet.");
+						setTimeout(() => { popup.close() }, 3000);
+					}
+				});
+
 				InsertButtonASAP();
-			else
+			}
+			else {
+				if (gmMenuButton != null)
+					GM_unregisterMenuCommand(gmMenuButton);
 				clearInterval(buttonInsertInterval);
+			}
 		}
 	}, 100);
 
@@ -163,20 +180,20 @@
 				if (!place)
 					place = document.querySelector("tp-yt-iron-dropdown.ytd-popup-container tp-yt-paper-listbox.ytd-menu-popup-renderer[role='listbox']");
 				if (place) {
-					const div = document.createElement('div');
-					div.id = 'exportPlainTextList';
-
-					const img = document.createElement('img');
-					img.src = 'https://i.imgur.com/emlur3a.png';
-					div.appendChild(img);
-
-					const span = document.createElement('span');
-					span.textContent = 'Export Playlist';
-					div.appendChild(span);
-
-					place.appendChild(div);
-
-					div.addEventListener('click', ScrollUntillAllVisible);
+					CreateElement("div", {
+						attributes: { id: "exportPlainTextList" },
+						children: [
+							CreateElement("img", {
+								attributes: { src: "https://i.imgur.com/emlur3a.png" }
+							}),
+							CreateElement("span", {
+								properties: { textContent: "Export Playlist" }
+							})
+						],
+						events: {
+							click: ScrollUntillAllVisible
+						}
+					}).appendChild(place);
 				}
 
 			}
@@ -188,7 +205,7 @@
 			return;
 
 		document.querySelector("ytd-browse[page-subtype='playlist']").click();
-		const popup = createPopup("Scrolling to load all videos in the playlist. Please wait...");
+		const popup = CreatePopup("Scrolling to load all videos in the playlist. Please wait...");
 		listCreationAllowed = false;
 		const scrollInterval = setInterval(() => {
 			if (document.querySelector("ytd-continuation-item-renderer.ytd-playlist-video-list-renderer")) {
@@ -202,103 +219,79 @@
 	}
 
 	function DisplayListOptions() {
-		//#region listDisplayContainer
-		// Create elements programmatically to avoid inline HTML generation
-		const container = document.createElement('div');
-		container.id = 'listDisplayContainer';
-
-		// Create the content structure
-		const p = document.createElement('p');
-		const span = document.createElement('span');
-		span.classList.add('title');
-		span.textContent = 'Playlist in plain text';
-		const closeButton = document.createElement('button');
-		closeButton.id = 'closeTheListThing';
-		closeButton.textContent = 'X';
-
-		p.appendChild(span);
-		p.appendChild(closeButton);
-		container.appendChild(p);
-
-		const textarea = document.createElement('textarea');
-		textarea.style.display = 'none';
-		container.appendChild(textarea);
-
-		const ul = document.createElement('ul');
-		ul.id = 'listDisplayOptions';
-
-		// Helper function to create a list item with a checkbox
-		function createListItem(labelText, checkboxId, checked) {
-			const li = document.createElement('li');
-			const label = document.createElement('label');
-			const input = document.createElement('input');
-			input.type = 'checkbox';
-			input.id = checkboxId;
-			input.name = checkboxId;
-			input.value = checkboxId;
-			if (checked) input.checked = true;
-			label.appendChild(input);
-			label.appendChild(document.createTextNode(labelText));
-			li.appendChild(label);
-			return li;
-		}
-
-		// Add list items
-		ul.appendChild(createListItem('Get titles', 'getVideoTitleCB', getVideoTitle));
-		ul.appendChild(createListItem('Get channel names', 'getVideoChannelCB', getVideoChannel));
-		ul.appendChild(createListItem('Get URLs', 'getVideoURLCB', getVideoURL));
-
-		const nameSeparatorInput = document.createElement('input');
-		nameSeparatorInput.type = 'text';
-		nameSeparatorInput.id = 'videoListSeperatorInput';
-		nameSeparatorInput.name = 'videoListSeperatorInput';
-		nameSeparatorInput.value = videoListSeperator;
-		nameSeparatorInput.style.width = '40px';
-		nameSeparatorInput.style.textAlign = 'center';
-
-		const nameSeparatorLabel = document.createElement('label');
-		nameSeparatorLabel.appendChild(nameSeparatorInput);
-		nameSeparatorLabel.appendChild(document.createTextNode(' Name/Author/URL separator'));
-
-		const nameSeparatorLi = document.createElement('li');
-		nameSeparatorLi.appendChild(nameSeparatorLabel);
-		ul.appendChild(nameSeparatorLi);
-
-		const getListButton = document.createElement('button');
-		getListButton.id = 'listDisplayGetListButton';
-		getListButton.textContent = 'Get list';
-
-		const buttonLi = document.createElement('li');
-		buttonLi.appendChild(getListButton);
-		ul.appendChild(buttonLi);
-
-		container.appendChild(ul);
-
-		// Append the container to the body
-		document.body.appendChild(container);
-		//#endregion
-
-		document.getElementById("getVideoTitleCB").addEventListener("change", function () {
-			getVideoTitle = this.checked;
-			GM_setValue("getVideoTitle", getVideoTitle);
-		});
-		document.getElementById("getVideoChannelCB").addEventListener("change", function () {
-			getVideoChannel = this.checked;
-			GM_setValue("getVideoChannel", getVideoChannel);
-		});
-		document.getElementById("getVideoURLCB").addEventListener("change", function () {
-			getVideoURL = this.checked;
-			GM_setValue("getVideoURL", getVideoURL);
-		});
-		document.getElementById("videoListSeperatorInput").addEventListener("change", function () {
-			videoListSeperator = this.value;
-			GM_setValue("videoListSeperator", videoListSeperator);
-		});
-		document.getElementById("listDisplayGetListButton").addEventListener("click", BuildAndDisplayList);
-		document.getElementById("closeTheListThing").addEventListener("click", () => {
-			document.getElementById("listDisplayContainer").remove();
-			listCreationAllowed = true;
-		});
+		CreateElement("div", {
+			attributes: { id: "listDisplayContainer" },
+			children: [
+				CreateElement("p", {
+					children: [
+						CreateElement("span", {
+							attributes: { class: "title" },
+							children: ["Playlist in plain text"]
+						}),
+						CreateElement("button", {
+							attributes: { id: "closeTheListThing" },
+							properties: { textContent: "X" },
+							events: {
+								click: () => {
+									document.getElementById("listDisplayContainer").remove();
+									listCreationAllowed = true;
+								}
+							}
+						})
+					]
+				}),
+				CreateElement("textarea", {
+					attributes: { style: "display: none;" }
+				}),
+				CreateElement("ul", {
+					attributes: { id: "listDisplayOptions" },
+					children: [
+						CreateListItemWithCheckbox('Get titles', 'getVideoTitleCB', getVideoTitle, function () {
+							getVideoTitle = this.checked;
+							GM_setValue("getVideoTitle", getVideoTitle);
+						}),
+						CreateListItemWithCheckbox('Get channel names', 'getVideoChannelCB', getVideoChannel, function () {
+							getVideoChannel = this.checked;
+							GM_setValue("getVideoChannel", getVideoChannel);
+						}),
+						CreateListItemWithCheckbox('Get URLs', 'getVideoURLCB', getVideoURL, function () {
+							getVideoURL = this.checked;
+							GM_setValue("getVideoURL", getVideoURL);
+						}),
+						CreateElement("li", {
+							children: [
+								CreateElement("label", {
+									children: [
+										CreateElement("input", {
+											attributes: { type: "text", id: "videoListSeperatorInput", name: "videoListSeperatorInput" },
+											properties: { value: videoListSeperator, style: "width: 40px; text-align: center;" },
+											events: {
+												change: function () {
+													videoListSeperator = this.value;
+													GM_setValue("videoListSeperator", videoListSeperator);
+												}
+											}
+										}),
+										" Name/Author/URL separator"
+									]
+								})
+							]
+						}),
+						CreateElement("li", {
+							children: [
+								CreateElement("button", {
+									attributes: { id: "listDisplayGetListButton" },
+									properties: { textContent: "Get list" },
+									events: {
+										click: BuildAndDisplayList
+									}
+								})
+							]
+						})
+					]
+				}),
+			]
+		}).appendChild(ul);
 	}
 
 	function BuildAndDisplayList() {
@@ -340,19 +333,73 @@
 		document.querySelector("#listDisplayContainer > textarea").value = list;
 	}
 
-	function createPopup(message) {
-		// Create the popup container
-		const popup = document.createElement('div');
-		popup.classList.add('yt-pl-export-loading-popup'); // Apply the popup class
+	function CreateElement(tag, {
+		attributes = {},
+		properties = {},
+		styles = {},
+		events = {},
+		children = []
+	} = {}) {
+		const el = document.createElement(tag);
 
-		// Create the message element
-		const messageElem = document.createElement('p');
-		messageElem.classList.add("yt-pl-export-loading-popup-message"); // Apply the message class
-		messageElem.textContent = message;
-		popup.appendChild(messageElem);
+		// Set attributes (id, type, value, etc.)
+		for (const [attr, value] of Object.entries(attributes)) {
+			el.setAttribute(attr, value);
+		}
 
-		// Append the popup to the body
-		document.body.appendChild(popup);
+		// Set direct properties (like textContent, checked, disabled)
+		for (const [prop, value] of Object.entries(properties)) {
+			el[prop] = value;
+		}
+
+		// Apply styles
+		for (const [key, value] of Object.entries(styles)) {
+			el.style[key] = value;
+		}
+
+		// Add event listeners
+		for (const [event, handler] of Object.entries(events)) {
+			el.addEventListener(event, handler);
+		}
+
+		// Append children
+		for (const child of children) {
+			el.appendChild(
+				typeof child === 'string' ? document.createTextNode(child) : child
+			);
+		}
+
+		return el;
+	}
+	function CreateListItemWithCheckbox(labelText, checkboxId, checked, functionOnChange) {
+		return CreateElement("li", {
+			children: [
+				CreateElement("label", {
+					children: [
+						CreateElement("input", {
+							attributes: { type: "checkbox", id: checkboxId, name: checkboxId, value: checkboxId },
+							properties: { checked: checked },
+							events: {
+								change: functionOnChange ? functionOnChange : () => { }
+							}
+						}),
+						labelText
+					]
+				})
+			]
+		});
+	}
+
+	function CreatePopup(message) {
+		CreateElement("div", {
+			attributes: { id: "yt-pl-export-loading-popup" },
+			children: [
+				CreateElement("p", {
+					attributes: { class: "yt-pl-export-loading-popup-message" },
+					properties: { textContent: message }
+				})
+			]
+		}).appendChild(document.body);
 
 		// Return an object that can be used to close the popup later
 		return {
