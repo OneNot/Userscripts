@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         Export Youtube Playlist in plaintext
 // @namespace    1N07
-// @version      0.9.5
+// @version      0.9.4
 // @description  Shows a list of the playlist video names/channels/URLs in plaintext to be easily copied
 // @author       1N07
 // @license      unlicense
-// @compatible   firefox v0.9.3 Tested on Firefox v137.0.1 and Tampermonkey 5.3.3 (Likely to work on other userscript managers, but not tested)
+// @compatible   firefox v0.9.4 Tested on Firefox v137.0.1 and Tampermonkey 5.3.3 (Likely to work on other userscript managers, but not tested)
 // @compatible   chrome v0.9.2 Tested on Chrome v132.0.6834.84 and Tampermonkey 5.3.3 (Likely to work on other userscript managers, but not tested)
 // @compatible   opera untested, but likely works with at least Tampermonkey
 // @compatible   edge untested, but likely works with at least Tampermonkey
@@ -180,20 +180,22 @@
 				if (!place)
 					place = document.querySelector("tp-yt-iron-dropdown.ytd-popup-container tp-yt-paper-listbox.ytd-menu-popup-renderer[role='listbox']");
 				if (place) {
-					CreateElement("div", {
-						attributes: { id: "exportPlainTextList" },
-						children: [
-							CreateElement("img", {
-								attributes: { src: "https://i.imgur.com/emlur3a.png" }
-							}),
-							CreateElement("span", {
-								properties: { textContent: "Export Playlist" }
-							})
-						],
-						events: {
-							click: ScrollUntillAllVisible
-						}
-					}).appendChild(place);
+					place.appendChild(
+						CreateElement("div", {
+							attributes: { id: "exportPlainTextList" },
+							children: [
+								CreateElement("img", {
+									attributes: { src: "https://i.imgur.com/emlur3a.png" }
+								}),
+								CreateElement("span", {
+									properties: { textContent: "Export Playlist" }
+								})
+							],
+							events: {
+								click: ScrollUntillAllVisible
+							}
+						})
+					);
 				}
 
 			}
@@ -219,79 +221,81 @@
 	}
 
 	function DisplayListOptions() {
-		CreateElement("div", {
-			attributes: { id: "listDisplayContainer" },
-			children: [
-				CreateElement("p", {
-					children: [
-						CreateElement("span", {
-							attributes: { class: "title" },
-							children: ["Playlist in plain text"]
-						}),
-						CreateElement("button", {
-							attributes: { id: "closeTheListThing" },
-							properties: { textContent: "X" },
-							events: {
-								click: () => {
-									document.getElementById("listDisplayContainer").remove();
-									listCreationAllowed = true;
-								}
-							}
-						})
-					]
-				}),
-				CreateElement("textarea", {
-					attributes: { style: "display: none;" }
-				}),
-				CreateElement("ul", {
-					attributes: { id: "listDisplayOptions" },
-					children: [
-						CreateListItemWithCheckbox('Get titles', 'getVideoTitleCB', getVideoTitle, function () {
-							getVideoTitle = this.checked;
-							GM_setValue("getVideoTitle", getVideoTitle);
-						}),
-						CreateListItemWithCheckbox('Get channel names', 'getVideoChannelCB', getVideoChannel, function () {
-							getVideoChannel = this.checked;
-							GM_setValue("getVideoChannel", getVideoChannel);
-						}),
-						CreateListItemWithCheckbox('Get URLs', 'getVideoURLCB', getVideoURL, function () {
-							getVideoURL = this.checked;
-							GM_setValue("getVideoURL", getVideoURL);
-						}),
-						CreateElement("li", {
-							children: [
-								CreateElement("label", {
-									children: [
-										CreateElement("input", {
-											attributes: { type: "text", id: "videoListSeperatorInput", name: "videoListSeperatorInput" },
-											properties: { value: videoListSeperator, style: "width: 40px; text-align: center;" },
-											events: {
-												change: function () {
-													videoListSeperator = this.value;
-													GM_setValue("videoListSeperator", videoListSeperator);
-												}
-											}
-										}),
-										" Name/Author/URL separator"
-									]
-								})
-							]
-						}),
-						CreateElement("li", {
-							children: [
-								CreateElement("button", {
-									attributes: { id: "listDisplayGetListButton" },
-									properties: { textContent: "Get list" },
-									events: {
-										click: BuildAndDisplayList
+		document.body.appendChild(
+			CreateElement("div", {
+				attributes: { id: "listDisplayContainer" },
+				children: [
+					CreateElement("p", {
+						children: [
+							CreateElement("span", {
+								attributes: { class: "title" },
+								children: ["Playlist in plain text"]
+							}),
+							CreateElement("button", {
+								attributes: { id: "closeTheListThing" },
+								properties: { textContent: "X" },
+								events: {
+									click: () => {
+										document.getElementById("listDisplayContainer").remove();
+										listCreationAllowed = true;
 									}
-								})
-							]
-						})
-					]
-				}),
-			]
-		}).appendChild(ul);
+								}
+							})
+						]
+					}),
+					CreateElement("textarea", {
+						attributes: { style: "display: none;" }
+					}),
+					CreateElement("ul", {
+						attributes: { id: "listDisplayOptions" },
+						children: [
+							CreateListItemWithCheckbox('Get titles', 'getVideoTitleCB', getVideoTitle, function () {
+								getVideoTitle = this.checked;
+								GM_setValue("getVideoTitle", getVideoTitle);
+							}),
+							CreateListItemWithCheckbox('Get channel names', 'getVideoChannelCB', getVideoChannel, function () {
+								getVideoChannel = this.checked;
+								GM_setValue("getVideoChannel", getVideoChannel);
+							}),
+							CreateListItemWithCheckbox('Get URLs', 'getVideoURLCB', getVideoURL, function () {
+								getVideoURL = this.checked;
+								GM_setValue("getVideoURL", getVideoURL);
+							}),
+							CreateElement("li", {
+								children: [
+									CreateElement("label", {
+										children: [
+											CreateElement("input", {
+												attributes: { type: "text", id: "videoListSeperatorInput", name: "videoListSeperatorInput" },
+												properties: { value: videoListSeperator, style: "width: 40px; text-align: center;" },
+												events: {
+													change: function () {
+														videoListSeperator = this.value;
+														GM_setValue("videoListSeperator", videoListSeperator);
+													}
+												}
+											}),
+											" Name/Author/URL separator"
+										]
+									})
+								]
+							}),
+							CreateElement("li", {
+								children: [
+									CreateElement("button", {
+										attributes: { id: "listDisplayGetListButton" },
+										properties: { textContent: "Get list" },
+										events: {
+											click: BuildAndDisplayList
+										}
+									})
+								]
+							})
+						]
+					}),
+				]
+			})
+		);
 	}
 
 	function BuildAndDisplayList() {
@@ -391,7 +395,7 @@
 	}
 
 	function CreatePopup(message) {
-		CreateElement("div", {
+		const popup = CreateElement("div", {
 			attributes: { id: "yt-pl-export-loading-popup" },
 			children: [
 				CreateElement("p", {
@@ -399,7 +403,8 @@
 					properties: { textContent: message }
 				})
 			]
-		}).appendChild(document.body);
+		});
+		document.body.appendChild(popup);
 
 		// Return an object that can be used to close the popup later
 		return {
