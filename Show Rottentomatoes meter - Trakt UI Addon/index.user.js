@@ -5,7 +5,7 @@
 // @author      1N07
 // @license     Unlicense
 // @icon        https://raw.githubusercontent.com/OneNot/Userscripts/main/Show%20Rottentomatoes%20meter%20-%20Trakt%20UI%20Addon/logo.png
-// @version     48.1.5
+// @version     48.1.6
 // @match       https://trakt.tv/movies/*
 // @match       https://trakt.tv/shows/*
 // @require     https://update.greasyfork.org/scripts/511024/1457631/Simple%20WaitForKeyElement.js
@@ -19,17 +19,17 @@ let HideRottenTomatoesMeterPanelOption;
 let HideRottenTomatoesMeterPanel;
 
 function ApplyHideRottenTomatoesMeterPanelCSS() {
-	const style = document.createElement("style");
-	style.innerHTML = `
+    const style = document.createElement("style");
+    style.innerHTML = `
     #mcdiv321rotten {
       display: none;
     }
   `;
-	document.head.appendChild(style);
+    document.head.appendChild(style);
 }
 
 const RottentomatoesIcons = {
-	empty_tomato: `<svg viewBox="0 0 80 80" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg">
+    empty_tomato: `<svg viewBox="0 0 80 80" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg">
     <g transform="translate(1.33 16.27)">
       <mask id="a" fill="#fff">
         <path d="M0 .247h77.083v63.468H0z"/>
@@ -38,11 +38,11 @@ const RottentomatoesIcons = {
     </g>
     <path d="M42.202 11.465c4.075-.971 15.796-.095 19.551 4.887.226.299-.092.864-.455.705-6.19-2.708-16.693 6.056-24.031 1.467.055 1.647-.267 9.682-11.585 10.148-.268.01-.415-.262-.246-.455 1.514-1.727 3.042-6.098.845-8.428-5.127 4.594-7.906 6.07-19.032 3.062-.364-.098-.24-.683.147-.83 2.103-.804 6.867-4.324 11.375-5.876a15.308 15.308 0 0 1 2.548-.657c-4.963-.444-7.2-1.134-10.356-.658a.392.392 0 0 1-.367-.627c4.253-5.478 12.088-7.132 16.922-4.222-2.98-3.692-5.314-6.636-5.314-6.636l5.53-3.142 3.948 8.82c4.114-6.078 11.768-6.639 15.002-2.326.192.256-.009.62-.33.613-2.631-.064-4.08 2.33-4.19 4.15l.038.005" fill="#BCBDBE"/>
   </svg>`,
-	empty_popcorn: `<svg viewBox="0 0 80 80" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg">
+    empty_popcorn: `<svg viewBox="0 0 80 80" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg">
     <path d="M12.631 19.099c.23 4.896 12.358 8.777 27.27 8.692 13.023-.074 23.886-3.15 26.548-7.19a3.902 3.902 0 0 0-2.388-1.262 3.903 3.903 0 0 0-3.266-4.189 3.905 3.905 0 0 0-3.854-4.657c-.048.001-.096.007-.144.009.137-.403.215-.834.212-1.284a3.905 3.905 0 0 0-3.926-3.882 3.89 3.89 0 0 0-1.4.271A3.901 3.901 0 0 0 48.5 3.544a3.903 3.903 0 0 0-3.894-3.42 3.895 3.895 0 0 0-3.08 1.54A3.89 3.89 0 0 0 38.631.399a3.905 3.905 0 0 0-3.692 5.107c-.88.163-1.654.62-2.22 1.266a3.904 3.904 0 0 0-3.79-2.891 3.902 3.902 0 0 0-3.657 2.61 3.903 3.903 0 0 0-2.442 3.64c.002.366.058.718.154 1.054a3.884 3.884 0 0 0-1.584-.328 3.903 3.903 0 0 0-3.664 2.626 3.876 3.876 0 0 0-1.662-.365 3.904 3.904 0 0 0-3.882 3.927 3.88 3.88 0 0 0 .536 1.947c-.034.034-.064.072-.097.108" fill="#DEDEDF"/>
     <path d="M61.074 68.158c-1.146 1.74-3.374 3.543-5.705 4.745l3.985-40.418c2.535-.814 5.01-1.893 6.832-3.441l-5.112 39.114Zm-9.67 6.43c-3.859 1.278-6.103 1.673-9.314 1.989l.5-41.534c3.548-.101 8.14-.582 12.053-1.417l-3.24 40.963Zm-23.006 0L25.16 33.627c3.912.835 8.504 1.316 12.052 1.417l.5 41.534c-3.211-.316-5.455-.711-9.314-1.988Zm-9.67-6.43-5.112-39.114c1.823 1.548 4.297 2.627 6.832 3.441l3.985 40.418c-2.331-1.202-4.558-3.005-5.704-4.745Zm42.06-54.547a3.913 3.913 0 0 1 .007 1.538 3.902 3.902 0 0 1 3.266 4.189c.944.125 1.781.587 2.388 1.261-2.661 4.041-13.525 7.117-26.548 7.192-14.911.085-27.04-3.796-27.27-8.692.033-.036.063-.074.097-.108a3.894 3.894 0 0 1-.471-1.294c-1.428 1.355-2.292 2.448-2.14 4.039.015.212 6.317 45.335 6.317 45.335.727 7.146 11.105 12.858 23.467 12.929 12.362-.07 22.74-5.783 23.467-12.93 0 0 6.302-45.122 6.317-45.334.302-3.183-3.422-6.072-8.897-8.125Z" fill="#BCBDBE"/>
   </svg>`,
-	red_popcorn: `<svg viewBox="0 0 80 80" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg">
+    red_popcorn: `<svg viewBox="0 0 80 80" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg">
     <g transform="translate(10.1)">
       <mask id="a" fill="#fff">
         <path d="M.018.125h59.584v79.857H.018z"/>
@@ -52,13 +52,13 @@ const RottentomatoesIcons = {
     </g>
     <path d="m25.16 33.626 3.238 40.963c3.86 1.277 6.103 1.672 9.314 1.988l-.5-41.534c-3.548-.101-8.14-.582-12.052-1.417M42.09 76.577c3.211-.316 5.455-.711 9.314-1.988l3.238-40.963c-3.912.835-8.504 1.316-12.052 1.417l-.5 41.534M55.37 72.903c2.33-1.202 4.558-3.005 5.703-4.745l5.113-39.114c-1.823 1.548-4.297 2.627-6.832 3.441L55.37 72.903M13.616 29.044l5.112 39.114c1.147 1.74 3.374 3.543 5.705 4.745l-3.985-40.418c-2.535-.814-5.01-1.893-6.832-3.441" fill="#FFFFFE"/>
   </svg>`,
-	green_popcorn: `<svg viewBox="0 0 80 80" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg">
+    green_popcorn: `<svg viewBox="0 0 80 80" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg">
     <path d="M45.478 52.075c.473-1.17 2.148-1.884 3.35-1.8 1.287.089 2.652 1.44 2.891 2.77.044-.048.09-.094.138-.139.413-.394.93-.656 1.496-.728a3.375 3.375 0 0 1-.048-1.215c.21-1.482 1.398-2.594 2.76-2.583.879.007 1.65.457 2.152 1.148.045-.057.094-.108.143-.16.574-2.993.938-6.373 1.021-9.961.285-12.337-2.845-22.415-6.99-22.51-4.146-.096-7.738 9.827-8.022 22.163 0 0-.22 4.5 1.109 13.015" fill="#185A30"/>
     <path d="M73.545 65.566c.245-.41.382-.9.372-1.42.08-1.683-1.076-3.21-2.683-3.04.046-.193.076-.393.088-.6.096-1.685-1.066-3.138-2.597-3.245a3.215 3.215 0 0 0-.1-.004 3.34 3.34 0 0 0 .21-1.38c-.08-1.403-1.046-2.585-2.305-2.818a2.535 2.535 0 0 0-1.299.098c-.381-.94-1.182-1.637-2.156-1.784-.077-1.525-1.18-2.78-2.598-2.88-.892-.061-1.712.349-2.26 1.035-.502-.691-1.273-1.14-2.152-1.148-1.362-.01-2.55 1.1-2.76 2.583-.06.42-.038.831.048 1.215a2.653 2.653 0 0 0-1.496.728c-.047.045-.094.09-.138.139-.239-1.33-1.604-2.68-2.89-2.77-1.203-.084-2.9.647-3.351 1.8.198 2.011 1.455 7.492 6 12.41l.041.002c.439.397 1.01.615 1.62.56.38-.033.727-.168 1.028-.377l.073.005c.4.278.88.423 1.389.378a2.09 2.09 0 0 0 .555-.13 2.506 2.506 0 0 0 2.49 1.386 2.615 2.615 0 0 0 1.972-1.192l.136.01a2.14 2.14 0 0 0 1.577.638c.496.752 1.408 1.214 2.415 1.125a2.768 2.768 0 0 0 1.048-.309c.526.648 1.39 1.033 2.338.95.937-.082 1.729-.602 2.16-1.32.423.34.953.522 1.516.471a2.172 2.172 0 0 0 1.396-.696l.06.004c.083-.12.154-.243.22-.367l.004-.008c.01-.016.02-.032.029-.05" fill="#F9D320"/>
     <path d="M42.209 21.672 6.562 25.187c1.06-2.056 2.65-4.02 4.185-5.031l34.497-4.51c-1.365 1.608-2.317 3.79-3.035 6.026Zm3.035 40.34-34.497-4.51c-1.535-1.01-3.125-2.975-4.185-5.03l35.647 3.514c.718 2.236 1.67 4.418 3.035 6.026ZM5.075 48.974C3.95 45.571 3.6 43.592 3.322 40.76l36.63.442c.09 3.13.515 7.18 1.251 10.63L5.075 48.974Zm0-20.29 36.128-2.856c-.736 3.45-1.16 7.5-1.25 10.63l-36.631.441c.278-2.833.627-4.811 1.753-8.215ZM56.72 16.309c-2.286-2.661-3.926-3.91-5.332-3.748-.262.033-39.984 5.571-39.984 5.571C5.1 18.773.063 27.926 0 38.83c.062 10.903 5.1 20.056 11.403 20.697 0 0 39.797 5.559 39.984 5.572.333-.002.66-.047.984-.13a2.206 2.206 0 0 1-.852-.481l-.04-.003c-4.546-4.917-5.803-10.398-6.001-12.409l.002-.004-.002.004c-1.329-8.515-1.11-13.015-1.11-13.015.285-12.336 3.877-22.26 8.022-22.164 4.146.096 7.276 10.174 6.991 22.51-.083 3.589-.447 6.97-1.021 9.962a2.607 2.607 0 0 1 2.117-.874c.135.01.267.032.396.062 2.517-13.775-.122-27.226-4.154-32.247Z" fill="#129B47"/>
     <path d="M41.203 25.828 5.075 28.684C3.95 32.088 3.6 34.066 3.322 36.899l36.63-.442c.09-3.129.515-7.179 1.251-10.63M45.244 15.647l-34.497 4.509c-1.535 1.01-3.125 2.975-4.185 5.03l35.647-3.514c.718-2.236 1.67-4.418 3.035-6.025M6.562 52.472c1.06 2.055 2.65 4.02 4.185 5.03l34.497 4.51c-1.365-1.608-2.317-3.79-3.035-6.026L6.562 52.472M39.955 41.135l-36.63-.441c.277 2.832.626 4.811 1.753 8.215l36.128 2.856c-.737-3.45-1.16-7.5-1.25-10.63" fill="#FFFFFE"/>
   </svg>`,
-	rotten: `<svg viewBox="0 0 80 80" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg">
+    rotten: `<svg viewBox="0 0 80 80" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg">
     <g transform="translate(0 1.23)">
       <mask id="a" fill="#fff">
         <path d="M0 .162h79.742v77.361H0z"/>
@@ -66,7 +66,7 @@ const RottentomatoesIcons = {
       <path d="M71.464 70.226c-15.118.793-18.207-16.506-24.138-16.382-2.528.052-4.52 2.695-3.645 5.775.481 1.693 1.815 4.175 2.656 5.716 2.966 5.437-1.418 11.59-6.549 12.11-8.526.865-12.082-4.081-11.862-9.144.247-5.684 5.066-11.492.123-13.963-5.18-2.59-9.39 7.537-14.347 9.798-4.487 2.046-10.714.46-12.928-4.522C-.781 56.113-.5 49.372 6.425 46.8c4.325-1.606 13.963 2.101 14.457-2.594.57-5.413-10.124-5.87-13.344-7.167-5.698-2.297-9.06-7.21-6.426-12.48 1.977-3.954 7.793-5.563 12.233-3.831 5.319 2.074 6.172 7.59 8.897 9.885 2.347 1.977 5.56 2.225 7.661.865 1.55-1.003 2.065-3.205 1.48-5.217-.775-2.67-2.832-4.337-4.84-5.97-3.573-2.905-8.617-5.403-5.566-13.33C23.477.462 30.813.228 30.813.228c2.915-.328 5.525.552 7.651 2.452 2.843 2.54 3.397 5.935 2.921 9.558-.434 3.306-1.605 6.202-2.215 9.477-.708 3.804 1.325 7.636 5.19 7.785 5.085.197 6.61-3.712 7.232-6.189.91-3.624 2.106-6.99 5.47-9.108 4.827-3.042 11.533-2.376 14.645 3.47 2.46 4.626 1.67 10.994-2.105 14.47-1.693 1.56-3.73 2.11-5.933 2.126-3.158.022-6.316-.055-9.248 1.423-1.996 1.006-2.866 2.645-2.866 4.842 0 2.142 1.115 3.54 2.921 4.45 3.402 1.715 7.158 2.066 10.833 2.71 5.33.933 10.015 2.81 13.024 7.756l.079.131c3.455 5.856-.159 14.287-6.948 14.644" fill="#0AC855" mask="url(#a)"/>
     </g>
   </svg>`,
-	fresh: `<svg viewBox="0 0 80 80" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg">
+    fresh: `<svg viewBox="0 0 80 80" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg">
     <g transform="translate(1.33 16.27)">
       <mask id="a" fill="#fff">
         <path d="M0 .247h77.083v63.468H0z"/>
@@ -75,7 +75,7 @@ const RottentomatoesIcons = {
     </g>
     <path d="M42.202 11.465c4.075-.971 15.796-.095 19.551 4.887.226.299-.092.864-.455.705-6.19-2.708-16.693 6.056-24.031 1.467.055 1.647-.267 9.682-11.585 10.148-.268.01-.415-.262-.246-.455 1.514-1.727 3.042-6.098.845-8.428-5.127 4.594-7.906 6.07-19.032 3.062-.364-.098-.24-.683.147-.83 2.103-.804 6.867-4.324 11.375-5.876a15.308 15.308 0 0 1 2.548-.657c-4.963-.444-7.2-1.134-10.356-.658a.392.392 0 0 1-.367-.627c4.253-5.478 12.088-7.132 16.922-4.222-2.98-3.692-5.314-6.636-5.314-6.636l5.53-3.142 3.948 8.82c4.114-6.078 11.768-6.639 15.002-2.326.192.256-.009.62-.33.613-2.631-.064-4.08 2.33-4.19 4.15l.038.005" fill="#00912D"/>
   </svg>`,
-	certified_fresh: `<svg viewBox="0 0 80 80" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    certified_fresh: `<svg viewBox="0 0 80 80" preserveAspectRatio="xMidYMid" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <defs>
       <path id="a" d="M.016.006h75.789V15.62H.016z"/>
     </defs>
@@ -114,9 +114,9 @@ const RottentomatoesIcons = {
 };
 
 const MakeRottenTomatoesScoreElement = (data, placeholder = false) => {
-	const li = document.createElement("li");
-	li.className = `rtm-ui-${data.type} ${placeholder ? "srtm-uia-placeholder" : ""}`;
-	li.innerHTML = `
+    const li = document.createElement("li");
+    li.className = `rtm-ui-${data.type} ${placeholder ? "srtm-uia-placeholder" : ""}`;
+    li.innerHTML = `
     <a href="${data.link}" title="${data.title}">
       <div class="icon" style="width: 30px; height: 30px;">${data.icon}</div>
       <div class="number">
@@ -125,72 +125,87 @@ const MakeRottenTomatoesScoreElement = (data, placeholder = false) => {
       </div>
     </a>
   `;
-	return li;
+    return li;
 };
 
 const SetRealData = (from) => {
-	const placeholders = document.getElementsByClassName("srtm-uia-placeholder");
-	while (placeholders.length > 0) placeholders[0].remove();
+    const placeholders = document.getElementsByClassName("srtm-uia-placeholder");
+    while (placeholders.length > 0) placeholders[0].remove();
 
-	const link = from?.getElementsByTagName("a")?.[0]?.getAttribute("href");
-	const criticsTitle = from
-		?.querySelector("[title^='Critics']")
-		?.getAttribute("title");
-	const audienceTitle = from
-		?.querySelector("[title^='Audience']")
-		?.getAttribute("title");
-	const audienceIconString = audienceTitle?.split("% ")?.[1]?.split(/\s/)?.[0];
-	const criticsIconString = criticsTitle?.split("% ")?.[1]?.split(/\s/)?.[0];
+    const link = from?.getElementsByTagName("a")?.[0]?.getAttribute("href");
+    const criticsTitle = from
+        ?.querySelector("[title^='Critics']")
+        ?.getAttribute("title");
+    const audienceTitle = from
+        ?.querySelector("[title^='Audience']")
+        ?.getAttribute("title");
+    const audienceIconString = audienceTitle?.split("% ")?.[1]?.split(/\s/)?.[0];
+    const criticsIconString = criticsTitle?.split("% ")?.[1]?.split(/\s/)?.[0];
 
-	return {
-		audience: {
-			type: "Audience",
-			score: audienceTitle?.split("Audience ")?.[1]?.split("%")?.[0] ?? "N/A",
-			icon: RottentomatoesIcons[
-				!audienceIconString || audienceIconString === "null"
-					? "empty_popcorn"
-					: audienceIconString
-			],
-			title:
-				!audienceTitle || audienceIconString === "null"
-					? "No audience score available"
-					: audienceTitle,
-			link: link ?? "#",
-		},
-		critics: {
-			type: "Critics",
-			score: criticsTitle?.split("Critics ")?.[1]?.split("%")?.[0] ?? "N/A",
-			icon: RottentomatoesIcons[
-				!criticsIconString || criticsIconString === "null"
-					? "empty_tomato"
-					: criticsIconString
-			],
-			title:
-				!criticsTitle || criticsIconString === "null"
-					? "No critics score available"
-					: criticsTitle,
-			link: link ?? "#",
-		},
-	};
+    return {
+        audience: {
+            type: "Audience",
+            score: audienceTitle?.split("Audience ")?.[1]?.split("%")?.[0] ?? "N/A",
+            icon: RottentomatoesIcons[
+                !audienceIconString || audienceIconString === "null"
+                    ? "empty_popcorn"
+                    : audienceIconString
+            ],
+            title:
+                !audienceTitle || audienceIconString === "null"
+                    ? "No audience score available"
+                    : audienceTitle,
+            link: link ?? "#",
+        },
+        critics: {
+            type: "Critics",
+            score: criticsTitle?.split("Critics ")?.[1]?.split("%")?.[0] ?? "N/A",
+            icon: RottentomatoesIcons[
+                !criticsIconString || criticsIconString === "null"
+                    ? "empty_tomato"
+                    : criticsIconString
+            ],
+            title:
+                !criticsTitle || criticsIconString === "null"
+                    ? "No critics score available"
+                    : criticsTitle,
+            link: link ?? "#",
+        },
+    };
 };
 
 const SetPlaceholderData = () => {
-	return {
-		audience: {
-			type: "Audience",
-			score: "...",
-			icon: RottentomatoesIcons.empty_popcorn,
-			title: "Loading...",
-			link: "#",
-		},
-		critics: {
-			type: "Critics",
-			score: "...",
-			icon: RottentomatoesIcons.empty_tomato,
-			title: "Loading...",
-			link: "#",
-		},
-	};
+    return {
+        audience: {
+            type: "Audience",
+            score: "...",
+            icon: RottentomatoesIcons.empty_popcorn,
+            title: "Loading...",
+            link: "#",
+        },
+        critics: {
+            type: "Critics",
+            score: "...",
+            icon: RottentomatoesIcons.empty_tomato,
+            title: "Loading...",
+            link: "#",
+        },
+    };
+};
+
+const SetHideRottenTomatoesMeterPanelOption = () => {
+    GM_unregisterMenuCommand(HideRottenTomatoesMeterPanelOption);
+    HideRottenTomatoesMeterPanelOption = GM_registerMenuCommand(
+        `Hide Rottentomatoes meter panel (${HideRottenTomatoesMeterPanel ? "yes" : "no"}) -click to change-`,
+        () => {
+            HideRottenTomatoesMeterPanel = !HideRottenTomatoesMeterPanel;
+            GM_setValue("HideRottenTomatoesMeterPanel", HideRottenTomatoesMeterPanel);
+            SetHideRottenTomatoesMeterPanelOption();
+            if (confirm("Reload page to apply changes?")) {
+                location.reload();
+            }
+        },
+    );
 };
 
 //TODO: timeouts for WaitForElements?
@@ -211,21 +226,21 @@ const SetPlaceholderData = () => {
         ApplyHideRottenTomatoesMeterPanelCSS();
     }
 
-	WaitForKeyElement(`
+    WaitForKeyElement(`
       .shows.show #summary-ratings-wrapper .ratings,
       .movies.show #summary-ratings-wrapper .ratings
   `).then((insertLocation) => {
-		const placeHolderData = SetPlaceholderData();
-		insertLocation.appendChild(
-			MakeRottenTomatoesScoreElement(placeHolderData.critics, true),
-		);
-		insertLocation.appendChild(
-			MakeRottenTomatoesScoreElement(placeHolderData.audience, true),
-		);
-		WaitForKeyElement("#mcdiv321rotten > .firstResult").then((rottenEl) => {
-			const data = SetRealData(rottenEl);
-			insertLocation.appendChild(MakeRottenTomatoesScoreElement(data.critics));
-			insertLocation.appendChild(MakeRottenTomatoesScoreElement(data.audience));
-		});
-	});
+        const placeHolderData = SetPlaceholderData();
+        insertLocation.appendChild(
+            MakeRottenTomatoesScoreElement(placeHolderData.critics, true),
+        );
+        insertLocation.appendChild(
+            MakeRottenTomatoesScoreElement(placeHolderData.audience, true),
+        );
+        WaitForKeyElement("#mcdiv321rotten > .firstResult").then((rottenEl) => {
+            const data = SetRealData(rottenEl);
+            insertLocation.appendChild(MakeRottenTomatoesScoreElement(data.critics));
+            insertLocation.appendChild(MakeRottenTomatoesScoreElement(data.audience));
+        });
+    });
 })();
