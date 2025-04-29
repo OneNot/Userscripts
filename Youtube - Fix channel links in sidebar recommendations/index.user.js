@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Youtube - Fix channel links in sidebar recommendations
 // @namespace    1N07
-// @version      0.8.2
+// @version      0.9
 // @description  Fixes the channel links for the "Up next" and recommended videos below it on youtube.
 // @author       1N07
 // @license      Unlicense
@@ -13,11 +13,11 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_addStyle
-// @compatible   firefox Tested on Firefox v130.0 using Tampermonkey v5.1.1
-// @compatible   chrome Tested on Chrome v128.0.6613.120 using Tampermonkey v5.2.3
-// @compatible   opera Latest version of Opera untested, but likely works with at least Tampermonkey
-// @compatible   edge Latest version of Edge untested, but likely works with at least Tampermonkey
-// @compatible   safari Latest version of Safari untested, but likely works with at least Tampermonkey
+// @compatible   firefox v0.9 tested on Firefox v138.0 using Tampermonkey v5.3.3
+// @compatible   chrome v0.9 tested on Chrome v135.0.7049.115 using Tampermonkey v5.3.3
+// @compatible   opera Opera untested, but likely works with at least Tampermonkey
+// @compatible   edge Edge untested, but likely works with at least Tampermonkey
+// @compatible   safari Safari untested, but likely works with at least Tampermonkey
 // ==/UserScript==
 
 (() => {
@@ -57,14 +57,8 @@
 			);
 			summary[0].added[0].addEventListener("click", () => {
 				setTimeout(() => {
-					if (document.getElementsByClassName("byu-add")?.length > 0) {
-						byuBlockerStyleAdjustment = GM_addStyle(
-							".channel-link-blocker { left: 20px !important; }",
-						);
-						//console.log("%cAdded blocker adjustment", "color: green;");
-					} else {
-						byuBlockerStyleAdjustment.remove();
-						//console.log("%cRemoved blocker adjustment", "color: green;");
+					for (const blocker of document.getElementsByClassName("channel-link-blocker")) {
+						UpdateBlockerSizeAndPositioning(blocker);
 					}
 				}, 200);
 			});
@@ -109,7 +103,7 @@
 					".channel-link-blocker",
 				);
 
-				UpdateBlockerPositioning(channelLink);
+				UpdateBlockerSizeAndPositioning(channelLink);
 				UpdateUrl(vid, channelLink);
 
 				// Add observer id to element so we can clean up the right observer when the element is later removed
@@ -123,7 +117,7 @@
 						callback: (vidSummary) => {
 							// console.log("%cPer Video Observer triggered: href changed", "color: green");
 
-							UpdateBlockerPositioning(channelLink);
+							UpdateBlockerSizeAndPositioning(channelLink);
 							UpdateUrl(vid, channelLink);
 						},
 						rootNode: blockerParent.querySelector("a[href^='/watch']"),
@@ -163,19 +157,29 @@
 		],
 	});
 
-	function UpdateBlockerPositioning(blocker) {
-		//blocker position adjustment
-		blocker.setAttribute(
-			"style",
-			`top: ${blocker.parentElement.querySelector("a[href^='/watch'] > h3")?.clientHeight || 0}px;`,
-		);
-		//above adjustment appears to rarely and randomly fail. Attempted fix by additionally delaying adjustment as perhaps the height hasn't been computed yet?
-		setTimeout(() => {
-			blocker.setAttribute(
-				"style",
-				`top: ${blocker.parentElement.querySelector("a[href^='/watch'] > h3")?.clientHeight || 0}px;`,
-			);
-		}, 1000);
+	function UpdateBlockerSizeAndPositioning(blocker, withDelayedRetry = true) {
+		const parentRect = blocker.parentElement.getBoundingClientRect();
+		const targetRect = blocker.parentElement.querySelector("#channel-name yt-formatted-string").getBoundingClientRect();
+
+		// Calculate the blocker's position relative to the parent
+		// targetRect position is viewport-relative, parentRect is too.
+		// Subtract parent's top/left from target's top/left
+		const blockerTop = targetRect.top - parentRect.top;
+		const blockerLeft = targetRect.left - parentRect.left;
+
+		// Apply size and position to the blocker
+		blocker.style.width = `${targetRect.width}px`;
+		blocker.style.height = `${targetRect.height}px`;
+		blocker.style.top = `${blockerTop}px`;
+		blocker.style.left = `${blockerLeft}px`;
+
+		//Not sure if below is needed anymore. Leaving it here for now, but commented out. Will remove later if he issue donesn't return.
+		//Adjustment appears to rarely and randomly fail. Attempted fix by additionally reapplying adjustment with a delay, as perhaps the height hasn't been computed yet or something?
+		// if (withDelayedRetry) {
+		// 	setTimeout(() => {
+		// 		UpdateBlockerPositioning(blocker, false);
+		// 	}, 1000);
+		// }
 	}
 
 	function UpdateUrl(fromElem, toElem) {
