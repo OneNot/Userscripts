@@ -5,13 +5,18 @@
 // @author      1N07
 // @license     Unlicense
 // @icon        https://raw.githubusercontent.com/OneNot/Userscripts/main/Show%20Rottentomatoes%20meter%20-%20Trakt%20UI%20Addon/logo.png
-// @version     48.1.4
+// @version     48.1.5
 // @match       https://trakt.tv/movies/*
 // @match       https://trakt.tv/shows/*
 // @require     https://update.greasyfork.org/scripts/511024/1457631/Simple%20WaitForKeyElement.js
+// @grant       GM_registerMenuCommand
+// @grant       GM_unregisterMenuCommand
+// @grant       GM_getValue
+// @grant       GM_setValue
 // ==/UserScript==
 
-const HideRottenTomatoesMeterPanel = true;
+let HideRottenTomatoesMeterPanelOption;
+let HideRottenTomatoesMeterPanel;
 
 function ApplyHideRottenTomatoesMeterPanelCSS() {
 	const style = document.createElement("style");
@@ -198,9 +203,13 @@ const SetPlaceholderData = () => {
 //Could load in all the results found and choose the first result with the matching year. That sounds like a fairly accurate solution.
 
 (() => {
-	if (HideRottenTomatoesMeterPanel) {
-		ApplyHideRottenTomatoesMeterPanelCSS();
-	}
+    HideRottenTomatoesMeterPanelOption;
+    HideRottenTomatoesMeterPanel = GM_getValue("HideRottenTomatoesMeterPanel", true);
+    SetHideRottenTomatoesMeterPanelOption();
+
+    if (HideRottenTomatoesMeterPanel) {
+        ApplyHideRottenTomatoesMeterPanelCSS();
+    }
 
 	WaitForKeyElement(`
       .shows.show #summary-ratings-wrapper .ratings,
