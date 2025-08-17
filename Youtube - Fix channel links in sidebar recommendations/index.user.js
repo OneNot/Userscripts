@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Youtube - Fix channel links in sidebar recommendations
 // @namespace    1N07
-// @version      0.9
+// @version      1.0
 // @description  Fixes the channel links for the "Up next" and recommended videos below it on youtube.
 // @author       1N07
 // @license      Unlicense
@@ -13,7 +13,7 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_addStyle
-// @compatible   firefox v0.9 tested on Firefox v138.0 using Tampermonkey v5.3.3
+// @compatible   firefox v1.0 tested on LibreWolf v136.0-2 using Tampermonkey v5.3.3
 // @compatible   chrome v0.9 tested on Chrome v135.0.7049.115 using Tampermonkey v5.3.3
 // @compatible   opera Opera untested, but likely works with at least Tampermonkey
 // @compatible   edge Edge untested, but likely works with at least Tampermonkey
@@ -27,7 +27,7 @@
 	SetVidSecOption();
 
 	GM_addStyle(`
-		ytd-compact-video-renderer .channel-link-blocker:hover ~ a #text.ytd-channel-name {
+		.ytd-watch-next-secondary-results-renderer .channel-link-blocker:hover ~ span {
 			text-decoration: underline;
 		}
 		.channel-link-blocker-parent
@@ -78,20 +78,21 @@
 	}, 10000);
 
 	const perVideoObservers = [];
+	const dataSearchIntervalMap = new Map();
 	let perVideoObserverIndexTally = 0;
 	const containerObserver = new MutationSummary({
 		callback: (containerSummary) => {
-			console.log(
-				`%cContainer Observer triggered - Added: ${containerSummary[0].added.length}, Removed: ${containerSummary[0].removed.length}, Reparented: ${containerSummary[0].reparented.length}`,
-				"color: green",
-			);
+			// console.log(
+			// 	`%cContainer Observer triggered - Added: ${containerSummary[0].added.length}, Removed: ${containerSummary[0].removed.length}, Reparented: ${containerSummary[0].reparented.length}`,
+			// 	"color: green",
+			// );
 
 			// On video added
 			for (const vid of containerSummary[0].added) {
+				//console.log(vid);
 				// Add blocker element
-				const blockerParent = vid.querySelector(
-					".metadata.ytd-compact-video-renderer",
-				);
+				const blockerParent = vid.querySelector(".yt-lockup-metadata-view-model-wiz__metadata .yt-content-metadata-view-model-wiz__metadata-row:first-child");
+				//console.log(blockerParent);
 				blockerParent.classList.add("channel-link-blocker-parent");
 
 				const blockerElem = document.createElement("a");
@@ -104,21 +105,49 @@
 				);
 
 				UpdateBlockerSizeAndPositioning(channelLink);
-				UpdateUrl(vid, channelLink);
+				UpdateUrl(vid, channelLink, true);
+
+				const thisVideoObserverIndex = perVideoObserverIndexTally;
 
 				// Add observer id to element so we can clean up the right observer when the element is later removed
-				vid.setAttribute("data-active-observer-id", perVideoObserverIndexTally);
+				vid.setAttribute("data-active-observer-id", thisVideoObserverIndex);
+
+				/* dev note for later:
+					Seems like PolymerController is no longer used. Also, data isn't populated when href is, so have to do even more complicated stuff. i.e. Checking for data on an interval until we get proper url, since we can't MutationObserve for data. 
+					The new setup is way too messy. Should see if I can figure out a way to more reliably detect when data is available to be read.
+					Seems like the href change mutationObserver detects a bunch of changes, not just one. Maybe one of those corresponds with data population?
+				*/
 
 				// Add per-video observer for when the video href changes, so we can update the channel link accordingly. Doing this because apparently these days YT just swaps the data in the elements without swapping the elements themselves.
 				// Also put the observer in an array with an access key for later access
 				perVideoObservers.push({
-					key: perVideoObserverIndexTally,
+					key: thisVideoObserverIndex,
 					observer: new MutationSummary({
 						callback: (vidSummary) => {
-							// console.log("%cPer Video Observer triggered: href changed", "color: green");
+							//console.log("%cPer Video Observer triggered: href changed - added: " + vidSummary[0].added.length + ", changed: " + vidSummary[0].valueChanged.length, "color: green");
 
 							UpdateBlockerSizeAndPositioning(channelLink);
-							UpdateUrl(vid, channelLink);
+
+							//Since latest YT update, the href being updated doesn't guarantee that the video yet has valid data, so at least for now, we just try to get the data periodically with an interval until we get it, or we timeout
+							//If there is already a interval for this video, clear it
+							if (dataSearchIntervalMap.has(thisVideoObserverIndex))
+								clearInterval(dataSearchIntervalMap.get(thisVideoObserverIndex));
+
+							//create new interval for this video with a timeout
+							let timeoutTracker = 0;
+							dataSearchIntervalMap.set(thisVideoObserverIndex, setInterval(() => {
+								//if the url is updated succesfully, we clear the interval
+								if (UpdateUrl(vid, channelLink)) {
+									clearInterval(dataSearchIntervalMap.get(thisVideoObserverIndex));
+									dataSearchIntervalMap.delete(thisVideoObserverIndex);
+								}
+								//track time, if time > 10s, give up and clear interval
+								timeoutTracker += 200;
+								if (timeoutTracker >= 10000) {
+									clearInterval(dataSearchIntervalMap.get(thisVideoObserverIndex));
+									dataSearchIntervalMap.delete(thisVideoObserverIndex);
+								}
+							}, 200));
 						},
 						rootNode: blockerParent.querySelector("a[href^='/watch']"),
 						queries: [{ attribute: "href" }],
@@ -149,17 +178,17 @@
 			//console.log("%cObservers alive: ", "color: yellow");
 			//console.log(perVideoObservers.map(x => x.key));
 		},
+		rootNode: document.querySelector("ytd-item-section-renderer.ytd-watch-next-secondary-results-renderer > #contents"),
 		queries: [
 			{
-				element:
-					"ytd-compact-video-renderer.ytd-item-section-renderer, ytd-compact-video-renderer.ytd-watch-next-secondary-results-renderer",
+				element: "yt-lockup-view-model.ytd-item-section-renderer",
 			},
 		],
 	});
 
 	function UpdateBlockerSizeAndPositioning(blocker, withDelayedRetry = true) {
 		const parentRect = blocker.parentElement.getBoundingClientRect();
-		const targetRect = blocker.parentElement.querySelector("#channel-name yt-formatted-string").getBoundingClientRect();
+		const targetRect = blocker.parentElement.querySelector("span.yt-content-metadata-view-model-wiz__metadata-text").getBoundingClientRect();
 
 		// Calculate the blocker's position relative to the parent
 		// targetRect position is viewport-relative, parentRect is too.
@@ -182,32 +211,37 @@
 		// }
 	}
 
-	function UpdateUrl(fromElem, toElem) {
-		//get data source object from element. Newest source used by YT is .polymerController, but older sources that may still be in use if certain flags are in place include .inst or just the element itself
-		const getVideoDataSource = (o) =>
-			o ? o.polymerController || o.inst || o || 0 : o || 0;
+	function UpdateUrl(fromElem, toElem, initial = false) {
+		//Used to get data from element. Newest source used by YT is .polymerController, but older sources that may still be in use if certain flags are in place include .inst or just the element itself
+		//Seems like polymerController is no longer used, but leaving it her for now as an option I guess - Though if polymerController does appear back, the data structure is likely different, so UpdateUrl will break.
+		const getVideoData = (o) => o?.polymerController?.data || o?.inst?.data || o?.data || null;
 
-		const channelHandle = getVideoDataSource(
-			fromElem,
-		)?.data?.longBylineText?.runs?.find((el) =>
-			el.navigationEndpoint?.browseEndpoint?.canonicalBaseUrl?.match(
-				/^\/(@|channel)/,
-			),
-		)?.navigationEndpoint.browseEndpoint.canonicalBaseUrl;
+		if (initial) {
+			toElem.addEventListener("click", (e) => {
+				if (e.target.href.endsWith("#")) {
+					e.preventDefault();
+					e.stopPropagation();
+					alert("Don't have the channel link for this yet. Try again in a second. If the problem persists, report it as an issue on greasyfork.");
+				}
+			});
+		}
+
+		const data = getVideoData(fromElem.firstElementChild);
+		//console.log("data:");
+		//console.log(data);
+		const channelHandle = data?.metadata?.lockupMetadataViewModel?.image?.decoratedAvatarViewModel?.rendererContext?.commandContext?.onTap?.innertubeCommand?.browseEndpoint?.canonicalBaseUrl;
+		//console.log("channelHandle:");
+		//console.log(channelHandle);
+
 		if (channelHandle?.length) {
 			toElem.setAttribute(
 				"href",
 				channelHandle + (videoSection ? "/videos" : ""),
 			);
+			return true;
 		} else {
-			console.log("Failed to get channel url");
-			toElem.addEventListener("click", (e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				alert(
-					"'Youtube - Fix channel links in sidebar recommendations' failed to get the channel link for this video for some reason. If this happens consistently, please report it at greasyfork.",
-				);
-			});
+			//console.log("Failed to get channel url");
+			return false;
 		}
 	}
 
