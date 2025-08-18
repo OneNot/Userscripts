@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Youtube - Fix channel links in sidebar recommendations
 // @namespace    1N07
-// @version      1.0
+// @version      1.0.1
 // @description  Fixes the channel links for the "Up next" and recommended videos below it on youtube.
 // @author       1N07
 // @license      Unlicense
@@ -13,12 +13,13 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_addStyle
-// @compatible   firefox v1.0 tested on LibreWolf v136.0-2 using Tampermonkey v5.3.3
-// @compatible   chrome v0.9 tested on Chrome v135.0.7049.115 using Tampermonkey v5.3.3
+// @incompatible firefox v1.0/1.0.1 broken on Firefox currently (LibreWolf works)
+// @compatible   chrome v1.0 tested on Chrome v139.0.7258.128 using Tampermonkey v5.3.3
 // @compatible   opera Opera untested, but likely works with at least Tampermonkey
 // @compatible   edge Edge untested, but likely works with at least Tampermonkey
 // @compatible   safari Safari untested, but likely works with at least Tampermonkey
 // ==/UserScript==
+//v1.0 tested on LibreWolf v136.0-2 using Tampermonkey v5.3.3
 
 (() => {
 	console.log("%cSCRIPT START", "color: green;");
