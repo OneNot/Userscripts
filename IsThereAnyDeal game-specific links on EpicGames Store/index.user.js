@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IsThereAnyDeal game-specific links on EpicGames Store
 // @namespace    1N07
-// @version      0.9.2
+// @version      0.9.3
 // @description  Puts a game-specific IsThereAnyDeal link to the game pages on Epic Games Store
 // @author       1N07
 // @license      Unlicense
@@ -44,7 +44,7 @@
 		) {
 			let place;
 			const insertInterval = setInterval(() => {
-				place = document.getElementsByClassName("css-bco1gb")[0];
+				place = document.querySelectorAll('button[data-testid="purchase-cta-button"]')[0]?.parentNode.parentNode;
 				if (place) {
 					clearInterval(insertInterval);
 					addGlobalStyle(`
@@ -62,7 +62,7 @@
 	function InsertAndMakeSureButtonStays() {
 		const ButtonStayInterval = setInterval(() => {
 			if (!document.getElementById("ITADButt")) {
-				const place = document.getElementsByClassName("css-bco1gb")[0];
+				const place = document.querySelectorAll('button[data-testid="purchase-cta-button"]')[0]?.parentNode.parentNode;
 				if (place) {
 					const newElem = CreateHTMLFrag(
 						`<div><button id="ITADButt" class="eds_14hl3lj9 eds_14hl3ljb eds_14hl3ljh eds_1ypbntdc eds_14hl3lja eds_14hl3lj2" style="background-color: #3090ce; color: black;"><span class="css-hahhpe-PurchaseCTA__ctaText">IsThereAnyDeal</span></button></div>`,
