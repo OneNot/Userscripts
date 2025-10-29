@@ -1,12 +1,7 @@
 <h1>Youtube - Fix channel links in sidebar recommendations</h1>
 <b>Fixes the channel links for the "Up next" and recommendated videos below it on youtube.</b>
 
-<h2>Known issues in v1.0.1:</h2>
-Since the latest rounds of youtube updates breaking everything, I have managed to partially fix the script, but as of right now:
-<ul>
-<li>Links start working at a slight delay (from when the videos appear on page)</li>
-<li>Firefox is not working. LibreWolf and Chrome work. Others untested.</li>
-<li>The script does not work if you are signed out</li>
+<h2>Script broken currently. Haven't tested all major browsers properly, but probably doesn't work on any of them properly. Will fix at some point when I feel like it. I'm making this unlisted until then, so that new people don't try to install this.</h2>
 </ul>
 <hr>
 <br>
