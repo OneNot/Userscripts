@@ -2,7 +2,7 @@
 ## Puts a game-specific IsThereAnyDeal link to the game pages on Epic Games Store
 *Clicking the button opens the game's page* on IsThereAnyDeal*
 
-![screenshot](https://i.imgur.com/ZL8HVoY.png)
+![screenshot](https://i.imgur.com/puMKWO1.jpeg)
 <h2>How it works</h2>
 The right page is found automatically in the background using a custom google search. You will not see it happen. As far as you will see, the right page should just pop up.
 
@@ -19,7 +19,7 @@ If you wish, you can change an option in the Tampermonkey menu so that the butto
 This is 100% reliable and will skip the less reliable (though mostly accurate anyway) automatic background process explained above.
 
 
-_Currently, the ITAD button is only added to the top of the page below the "View Offers" button. So no separate buttons for different editions or addons/DLC/what have you, unless you open the separate page for that edition/DLC._
+_Currently, the ITAD button is only added for the specific product that the page is for. So no separate buttons for different editions or addons/DLC/what have you, unless you open the separate page for that edition/DLC._
 
 ____
 
