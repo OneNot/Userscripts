@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IsThereAnyDeal game-specific links on EpicGames Store
 // @namespace    1N07
-// @version      0.9.3
+// @version      0.9.4
 // @description  Puts a game-specific IsThereAnyDeal link to the game pages on Epic Games Store
 // @author       1N07
 // @license      Unlicense
@@ -13,10 +13,12 @@
 // @compatible   edge Latest version untested, but likely works with at least Tampermonkey
 // @compatible   safari Latest version untested, but likely works with at least Tampermonkey
 // @match        https://store.epicgames.com/*
+// @resource     itadIcon  https://isthereanydeal.com/favicon.png
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_getResourceURL
 // @grant        GM_xmlhttpRequest
 // @connect      google.com
 // @noframes
@@ -62,13 +64,18 @@
 	function InsertAndMakeSureButtonStays() {
 		const ButtonStayInterval = setInterval(() => {
 			if (!document.getElementById("ITADButt")) {
-				const place = document.querySelectorAll('button[data-testid="purchase-cta-button"]')[0]?.parentNode.parentNode;
-				if (place) {
-					const newElem = CreateHTMLFrag(
-						`<div><button id="ITADButt" class="eds_14hl3lj9 eds_14hl3ljb eds_14hl3ljh eds_1ypbntdc eds_14hl3lja eds_14hl3lj2" style="background-color: #3090ce; color: black;"><span class="css-hahhpe-PurchaseCTA__ctaText">IsThereAnyDeal</span></button></div>`,
-					);
-					place.insertBefore(newElem, place.firstChild);
-					document.getElementById("ITADButt").onclick = GoToITAD;
+				const buyButtonDiv = document.querySelectorAll('button[data-testid="purchase-cta-button"]')[0]?.parentNode;
+				if (buyButtonDiv) {
+					buyButtonDiv.style.flexGrow = "1";
+					const place = buyButtonDiv.parentNode;
+					if (place) {
+						const newElem = CreateHTMLFrag(
+							`<button id="ITADButt" class="eds_14hl3lj9 eds_14hl3ljb eds_14hl3ljh eds_1ypbntdc eds_14hl3lja eds_14hl3lj2" title="Is there any deal?" style="background-color: #343437; color: white;"><span class="css-hahhpe-PurchaseCTA__ctaText"><img width="24" height="24" src="${GM_getResourceURL("itadIcon")}" alt="ITAD"/></span></button>`,
+						);
+						newElem.style.flexGrow = "0";
+						place.insertBefore(newElem, place.firstChild);
+						document.getElementById("ITADButt").onclick = GoToITAD;
+					}
 				}
 			}
 		}, 200);
