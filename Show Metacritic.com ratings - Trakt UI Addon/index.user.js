@@ -5,7 +5,7 @@
 // @author      1N07
 // @license     Unlicense
 // @icon        https://raw.githubusercontent.com/OneNot/Userscripts/main/Show%20Metacritic.com%20ratings%20-%20Trakt%20UI%20Addon/logo.png
-// @version     110.1.0
+// @version     110.1.1
 // @match       https://trakt.tv/movies/*
 // @match       https://trakt.tv/shows/*
 // @require     https://update.greasyfork.org/scripts/511024/1457631/Simple%20WaitForKeyElement.js
@@ -16,6 +16,8 @@
 // ==/UserScript==
 
 //TODO: Handle which comes first if both this and the other Trakt UI Addon are in use at the same time
+//note: insertBEfore didn't insert before for whatever reason (even though I checked that the target was in the DOM), so might want to try somethign else...
+//...or do it again and hope I just messed somethign up last time.
 
 let HideMetacriticPanelOption;
 let HideMetacriticPanel;
