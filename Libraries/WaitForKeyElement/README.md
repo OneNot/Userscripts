@@ -7,6 +7,8 @@
 ```
 WaitForKeyElement('#someElement', 10000).then((foundElement) => {
   //do things with foundElement
+}).catch((err) => {
+  //do some error handling. Timeout handling would go here.
 });
 ```
 
