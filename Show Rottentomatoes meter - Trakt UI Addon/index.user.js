@@ -5,7 +5,7 @@
 // @author      1N07
 // @license     Unlicense
 // @icon        https://raw.githubusercontent.com/OneNot/Userscripts/main/Show%20Rottentomatoes%20meter%20-%20Trakt%20UI%20Addon/logo.png
-// @version     48.1.6
+// @version     48.1.7
 // @match       https://trakt.tv/movies/*
 // @match       https://trakt.tv/shows/*
 // @require     https://update.greasyfork.org/scripts/511024/1457631/Simple%20WaitForKeyElement.js
@@ -15,6 +15,15 @@
 // @grant       GM_setValue
 // ==/UserScript==
 
+//TODO: Handle which comes first if both this and the other Trakt UI Addon are in use at the same time
+//TODO: try to root out false positives
+//e.g.
+//John Wick 5 -> finds John Wick
+//Se7en (1995) -> finds Se7en days (2010) - because it's called just Seven in Rottentomatoes
+//More results... is available in some cases
+//Could load in all the results found and choose the first result with the matching year. That sounds like a fairly accurate solution.
+
+
 let HideRottenTomatoesMeterPanelOption;
 let HideRottenTomatoesMeterPanel;
 
@@ -23,6 +32,20 @@ function ApplyHideRottenTomatoesMeterPanelCSS() {
     style.innerHTML = `
     #mcdiv321rotten {
       display: none;
+    }
+  `;
+    document.head.appendChild(style);
+}
+
+function WidenInfobar() {
+    const style = document.createElement("style");
+    style.innerHTML = `
+    #summary-ratings-wrapper > .container .ul-wrapper {
+        width: 100%;
+        margin-left: calc(((100% - 1160px) / 2) + 193px);
+    }
+    #summary-ratings-wrapper > .container {
+        width: 100%
     }
   `;
     document.head.appendChild(style);
@@ -208,19 +231,12 @@ const SetHideRottenTomatoesMeterPanelOption = () => {
     );
 };
 
-//TODO: timeouts for WaitForElements?
-
-//TODO: try to root out false positives
-//e.g.
-//John Wick 5 -> finds John Wick
-//Se7en (1995) -> finds Se7en days (2010) - because it's called just Seven in Rottentomatoes
-//More results... is available in some cases
-//Could load in all the results found and choose the first result with the matching year. That sounds like a fairly accurate solution.
-
 (() => {
     HideRottenTomatoesMeterPanelOption;
     HideRottenTomatoesMeterPanel = GM_getValue("HideRottenTomatoesMeterPanel", true);
     SetHideRottenTomatoesMeterPanelOption();
+
+    WidenInfobar();
 
     if (HideRottenTomatoesMeterPanel) {
         ApplyHideRottenTomatoesMeterPanelCSS();
@@ -229,7 +245,7 @@ const SetHideRottenTomatoesMeterPanelOption = () => {
     WaitForKeyElement(`
       .shows.show #summary-ratings-wrapper .ratings,
       .movies.show #summary-ratings-wrapper .ratings
-  `).then((insertLocation) => {
+  `, 20000).then((insertLocation) => {
         const placeHolderData = SetPlaceholderData();
         insertLocation.appendChild(
             MakeRottenTomatoesScoreElement(placeHolderData.critics, true),
@@ -237,10 +253,14 @@ const SetHideRottenTomatoesMeterPanelOption = () => {
         insertLocation.appendChild(
             MakeRottenTomatoesScoreElement(placeHolderData.audience, true),
         );
-        WaitForKeyElement("#mcdiv321rotten > .firstResult").then((rottenEl) => {
+        WaitForKeyElement("#mcdiv321rotten > .firstResult", 20000).then((rottenEl) => {
             const data = SetRealData(rottenEl);
             insertLocation.appendChild(MakeRottenTomatoesScoreElement(data.critics));
             insertLocation.appendChild(MakeRottenTomatoesScoreElement(data.audience));
+        }).catch((err) => {
+            console.error("Could not find data from 'Show Rottentomatoes meter' - are you sure you have it installed? This script doesn't work on it's own.");
         });
+    }).catch((err) => {
+        console.error("Could not find insert location for Tomato Meter info");
     });
 })();
