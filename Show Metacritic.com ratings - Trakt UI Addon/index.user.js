@@ -5,7 +5,7 @@
 // @author      1N07
 // @license     Unlicense
 // @icon        https://raw.githubusercontent.com/OneNot/Userscripts/main/Show%20Metacritic.com%20ratings%20-%20Trakt%20UI%20Addon/logo.png
-// @version     110.1.1
+// @version     111.1.1
 // @match       https://trakt.tv/movies/*
 // @match       https://trakt.tv/shows/*
 // @require     https://update.greasyfork.org/scripts/511024/1457631/Simple%20WaitForKeyElement.js
@@ -117,7 +117,7 @@ const SetRealData = (from) => {
     const placeholders = document.getElementsByClassName("mcr-uia-placeholder");
     while (placeholders.length > 0) placeholders[0].remove();
 
-    const realDataSectionParents = from?.querySelectorAll(".c-reviewsOverview_overviewDetails");
+    const realDataSectionParents = from?.querySelectorAll(".reviews-overview__details");
     const realDataCriticsParent = realDataSectionParents?.[0];
     const realDataUsersParent = realDataSectionParents?.[1];
 
@@ -132,11 +132,11 @@ const SetRealData = (from) => {
     const usersScore = usersScoreElem?.innerText?.trim();
     const usersScoreColor = usersScoreElem != null ? ([...(usersScoreElem.classList)].find(cls => cls.startsWith("c-siteReviewScore_"))?.split("c-siteReviewScore_")?.[1] ?? "tbd") : "tbd";
 
-    const criticsSentiment = realDataCriticsParent?.getElementsByClassName("c-ScoreCard_scoreSentiment")?.[0]?.innerText?.trim();
-    const usersSentiment = realDataUsersParent?.getElementsByClassName("c-ScoreCard_scoreSentiment")?.[0]?.innerText?.trim();
+    const criticsSentiment = realDataCriticsParent?.getElementsByClassName("score-sentiment")?.[0]?.innerText?.trim();
+    const usersSentiment = realDataUsersParent?.getElementsByClassName("score-sentiment")?.[0]?.innerText?.trim();
 
-    const criticsVotes = realDataCriticsParent?.querySelector(".c-ScoreCard_reviewsTotal span")?.innerText?.match(/[\d,]+/)[0];
-    const usersVotes = realDataUsersParent?.querySelector(".c-ScoreCard_reviewsTotal span")?.innerText?.match(/[\d,]+/)[0];
+    const criticsVotes = realDataCriticsParent?.querySelector(".score-review-count")?.innerText?.match(/[\d,]+/)[0];
+    const usersVotes = realDataUsersParent?.querySelector(".score-review-count")?.innerText?.match(/[\d,]+/)[0];
 
 
     return {
