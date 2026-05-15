@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IsThereAnyDeal game-specific links on EpicGames Store
 // @namespace    1N07
-// @version      0.9.4
+// @version      0.9.5
 // @description  Puts a game-specific IsThereAnyDeal link to the game pages on Epic Games Store
 // @author       1N07
 // @license      Unlicense
@@ -13,7 +13,7 @@
 // @compatible   edge Latest version untested, but likely works with at least Tampermonkey
 // @compatible   safari Latest version untested, but likely works with at least Tampermonkey
 // @match        https://store.epicgames.com/*
-// @resource     itadIcon  https://isthereanydeal.com/favicon.png
+// @resource     itadIcon  https://isthereanydeal.com/public/icons/favicon-b6ae0302.svg
 // @grant        GM_registerMenuCommand
 // @grant        GM_unregisterMenuCommand
 // @grant        GM_getValue
