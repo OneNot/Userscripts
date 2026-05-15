@@ -41,7 +41,7 @@
 		//Epic Game Store Page
 		if (
 			window.location.href.match(
-				/https:\/\/store\.epicgames\.com\/.+?\/(p|b)\/.+/g,
+				/https:\/\/store\.epicgames\.com\/(p|b)\/.+/g,
 			)
 		) {
 			let place;
