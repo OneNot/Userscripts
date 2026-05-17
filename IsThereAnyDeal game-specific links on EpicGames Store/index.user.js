@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         IsThereAnyDeal game-specific links on EpicGames Store
 // @namespace    1N07
-// @version      0.9.5
+// @version      0.9.6
 // @description  Puts a game-specific IsThereAnyDeal link to the game pages on Epic Games Store
 // @author       1N07
 // @license      Unlicense
@@ -82,9 +82,7 @@
 	}
 
 	function GoToITAD() {
-		let name = null; //Disabled this method for now, it doesn't seem that great afterall...   document.getElementById("page-meta-keywords").getAttribute("content"); //this seems to be a fairly reliable way to get the title of the game without any affixes or what have you, like editions etc.
-		if (name === null || name.length === 0)
-			name = document.querySelector("h1.eds_1ypbntd0").textContent;
+		let name = document.querySelector(`h1 > [data-testid="pdp-title"]`).textContent;
 		if (name === null || name.length === 0)
 			alert("ITAD on EG: Could not find game title");
 
